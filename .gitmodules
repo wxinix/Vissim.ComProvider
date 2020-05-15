@@ -1,0 +1,3 @@
+[submodule "FSharp.Interop.ComProvider"]
+	path = FSharp.Interop.ComProvider
+	url = ../FSharp.Interop.ComProvider
