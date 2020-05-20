@@ -25,15 +25,15 @@
 // domain. Unlicensed  works, modifications,  and larger works may be distributed
 // under different terms and without source code.
 
-namespace FSharp.Interop.ComProvider
+namespace FSharp.Interop.ComProvider.Vissim
 
 open System
 open System.IO
 open System.Reflection
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
-open TypeLibInfo
-open TypeLibImport
+open FSharp.Interop.ComProvider.TypeLibInfo
+open FSharp.Interop.ComProvider.TypeLibImport
 
 [<TypeProvider>]
 type ComProvider(cfg: TypeProviderConfig) as this =
