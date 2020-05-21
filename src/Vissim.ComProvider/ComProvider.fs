@@ -42,6 +42,12 @@ type ComProvider(cfg: TypeProviderConfig) as this =
     /// Currently executing assembly.
     let asm = Assembly.GetExecutingAssembly()
 
+    /// Check if the type lib has Primary Interop Assemblies (PIA) defined.
+    let checkTypeLibPia lib =
+        lib.Pia |> Option.iter(fun pia -> 
+            failwithf "Accessing type libraries with Primary Interop Assemblies using the COM Type Provider \
+                       not supported. Directly referencing the assembly '%s' instead." pia)
+
     (*
      The TypeLib registry key allows specifying separate type libraries for platform affinity.
      However, the type provider has no way to know what target platform the subject project
@@ -81,8 +87,7 @@ type ComProvider(cfg: TypeProviderConfig) as this =
                     nameTy.AddMember(subTy)
                     subTy.IsErased <- false
                     subTy.AddMembersDelayed <| fun _ ->
-                        lib.Pia |> Option.iter (fun pia ->
-                            failwithf "Accessing type libraries with Primary Interop Assemblies using the COM Type Provider not supported. Directly referencing the assembly '%s' instead." pia)                           
+                        lib |> checkTypeLibPia
                         let tempDir = Path.Combine(cfg.TemporaryFolder, "FSharp.Interop.ComProvider", Guid.NewGuid().ToString())
                         Directory.CreateDirectory(tempDir) |> ignore
                         let assemblies = importTypeLib lib.Path tempDir
