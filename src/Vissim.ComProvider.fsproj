@@ -19,10 +19,11 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
-    <OutputPath>..\..\bin</OutputPath>
+    <OutputPath>..\output\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>..\..\bin\ComProvider.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <StartAction>Program</StartAction>
     <StartProgram>devenv.exe</StartProgram>
     <StartWorkingDirectory>
@@ -33,10 +34,11 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
-    <OutputPath>..\..\bin</OutputPath>
+    <OutputPath>..\output\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>..\..\bin\ComProvider.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
@@ -56,16 +58,31 @@
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="..\..\FSharp.Interop.ComProvider\src\FSharp.Interop.ComProvider\ProvidedTypes.fs" />
-    <Compile Include="..\..\FSharp.Interop.ComProvider\src\FSharp.Interop.ComProvider\Utility.fs" />
-    <Compile Include="..\..\FSharp.Interop.ComProvider\src\FSharp.Interop.ComProvider\ReflectionProxies.fs" />
-    <Compile Include="..\..\FSharp.Interop.ComProvider\src\FSharp.Interop.ComProvider\TypeLibInfo.fs" />
-    <Compile Include="..\..\FSharp.Interop.ComProvider\src\FSharp.Interop.ComProvider\TypeLibDoc.fs" />
-    <Compile Include="..\..\FSharp.Interop.ComProvider\src\FSharp.Interop.ComProvider\TypeLibImport.fs" />
+    <Compile Include="..\FSharp.Interop.ComProvider\src\ProvidedTypes.fs">
+      <Link>ProvidedTypes.fs</Link>
+    </Compile>
+    <Compile Include="..\FSharp.Interop.ComProvider\src\Utility.fs">
+      <Link>Utility.fs</Link>
+    </Compile>
+    <Compile Include="..\FSharp.Interop.ComProvider\src\ReflectionProxies.fs">
+      <Link>ReflectionProxies.fs</Link>
+    </Compile>
+    <Compile Include="..\FSharp.Interop.ComProvider\src\TypeLibInfo.fs">
+      <Link>TypeLibInfo.fs</Link>
+    </Compile>
+    <Compile Include="..\FSharp.Interop.ComProvider\src\TypeLibDoc.fs">
+      <Link>TypeLibDoc.fs</Link>
+    </Compile>
+    <Compile Include="..\FSharp.Interop.ComProvider\src\TypeLibImport.fs">
+      <Link>TypeLibImport.fs</Link>
+    </Compile>
     <Compile Include="ComProvider.fs" />
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="FSharp.Core">
+      <HintPath>..\packages\FSharp.Core.4.7.2\lib\net45\FSharp.Core.dll</HintPath>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
