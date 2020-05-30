@@ -88,7 +88,7 @@ type ComProvider(cfg: TypeProviderConfig) as this =
                     subTy.IsErased <- false
                     subTy.AddMembersDelayed <| fun _ ->
                         lib |> checkTypeLibPia
-                        let tempDir = Path.Combine(cfg.TemporaryFolder, "FSharp.Interop.ComProvider", Guid.NewGuid().ToString())
+                        let tempDir = Path.Combine(cfg.TemporaryFolder, "Vissim.ComProvider", Guid.NewGuid().ToString())
                         Directory.CreateDirectory(tempDir) |> ignore
                         let assemblies = importTypeLib lib.Path tempDir
                         // assemblies |> List.iter(fun asm -> ProvidedAssembly.RegisterGenerated(asm.Location) |> ignore)
