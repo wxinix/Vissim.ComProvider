@@ -6,7 +6,7 @@ open System.Runtime.InteropServices
 // or add references.
 
 type VissimLib_540 = COM.``VISSIM_COMServer 5.40 Type Library``.``1.0-win64`` // Alias of Vissim version 540 COM Type Lib
-type VissimLib_100 = COM.``Vissim Object Library 10.0``.``a.0-win32`` // Alias of Vissim version 100 COM Type Lib
+type VissimLib_100 = COM.``Vissim Object Library 10.0``.``a.0-win32``         // Alias of Vissim version 100 COM Type Lib
 type VissimLib_200 = COM.``Vissim Object Library 20.0 64 Bit``.``14.0-win64`` // Alias of Vissim version 200 COM Type Lib
 
 // The installed Vissim Type Libs are part of the compiler type system. We just alias them with short names.
@@ -20,7 +20,7 @@ let main argv =
     // We can have different versions of Vissim COM objects co-exisit in the same app domain.
 
     vissim200.LoadNet @"X:\Temp\Urban Intersection Beijing.CN\Intersection Beijing.inpx"
-    for linkObj in vissim200.Net.Links do
+    for linkObj in vissim200.Net.Links do  
         let link = linkObj :?> VissimLib_200.ILink // Downcast, ILink is a subtype under VissimLib_200
         link.AttValue("No") |> string |> printfn "Link No %s"
 
