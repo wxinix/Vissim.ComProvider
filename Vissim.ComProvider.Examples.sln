@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30104.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "OpenNetwork", "examples\OpenNetwork\OpenNetwork.fsproj", "{7ADF9B3C-D9DA-49FD-A7C9-0A58DA533109}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BasicCommands", "examples\BasicCommands\BasicCommands.fsproj", "{C9794850-0B95-4550-9A4A-5914439D82F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7ADF9B3C-D9DA-49FD-A7C9-0A58DA533109}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7ADF9B3C-D9DA-49FD-A7C9-0A58DA533109}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7ADF9B3C-D9DA-49FD-A7C9-0A58DA533109}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7ADF9B3C-D9DA-49FD-A7C9-0A58DA533109}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9794850-0B95-4550-9A4A-5914439D82F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9794850-0B95-4550-9A4A-5914439D82F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9794850-0B95-4550-9A4A-5914439D82F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9794850-0B95-4550-9A4A-5914439D82F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

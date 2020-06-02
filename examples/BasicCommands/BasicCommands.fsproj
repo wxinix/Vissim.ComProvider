@@ -5,10 +5,10 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>7adf9b3c-d9da-49fd-a7c9-0a58da533109</ProjectGuid>
+    <ProjectGuid>{c9794850-0b95-4550-9a4a-5914439d82f4}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>Vissim.ComProvider.Tests</RootNamespace>
-    <AssemblyName>OpenNetwork</AssemblyName>
+    <AssemblyName>BasicCommands</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
@@ -57,8 +57,8 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-    <Compile Include="OpenNetwork.fs" />
-    <None Include="OpenNetworkScript.fsx" />
+    <Compile Include="BasicCommands.fs" />
+    <None Include="BasicCommands.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
