@@ -4,6 +4,7 @@
 #I "../../output"
 #r "Vissim.ComProvider.dll"
 
+open System
 open System.IO
 
 // Alias to Vissim 2020 COM Type Lib
@@ -15,5 +16,6 @@ let networkFile = VissimComExampleFolder + @"\Basic Commands\COM Basic Commands.
 
 let vissim = VissimLib.VissimClass()
 vissim.LoadNet networkFile
-// Do nothing and exit.
+vissim.Graphics.AttValue("QuickMode") <- true
+vissim.Simulation.RunContinuous()
 vissim.Exit()
