@@ -158,7 +158,7 @@ let loopTest (vissim: VissimLib.IVissim) =
             (timeDoingMultipleAttributesLoop                |> string)
     
     printfn "%10s \t%10.3f \t%10.3f \t%10.3f \t%18.3f \t%18.3f"  
-            "Factor" 
+            "Factor(x1)" 
             ((double timeGettingAllElements + double timeDoingGetAllLoop) / double timeDoingMultipleAttributesLoop) 
             (double timeDoingEnumLoop / double timeDoingMultipleAttributesLoop) 
             (double timeDoingIterLoop / double timeDoingMultipleAttributesLoop) 
