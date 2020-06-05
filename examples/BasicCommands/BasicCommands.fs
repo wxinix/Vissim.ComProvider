@@ -141,78 +141,6 @@ let accessSignalsInSimulationRun (vissim: VissimLib.IVissim) =
     sg.AttValue("ContrByCOM") <- false
     vissim
 
-let loopTest (vissim: VissimLib.IVissim) =
-    printfn "\nBeginning loopTest"
-
-    let runVehLoopWithGetAll =
-        let stopWatch = System.Diagnostics.Stopwatch.StartNew()
-        let allVehicles = vissim.Net.Vehicles.GetAll().AsArray<VissimLib.IVehicle>()
-        for i in 0..allVehicles.Length - 1 do
-            let veh = allVehicles.[i]
-            let vehNumber   = veh.AttValue("No")      :?> int
-            let vehType     = veh.AttValue("VehType") |> string
-            let vehSpeed    = veh.AttValue("Speed")   :?> double
-            let vehPos      = veh.AttValue("Pos")     :?> double
-            let vehLinkLane = veh.AttValue("Lane")    |> string
-            printfn "No %d\t | Type %s\t | Speed %6.3f\t | Pos %10.3f\t | Lane %10s\t" vehNumber vehType vehSpeed vehPos vehLinkLane
-        stopWatch.Stop()
-        printfn "Loop all vehicles with GetAll takes %f milliseconds" stopWatch.Elapsed.TotalMilliseconds
-
-    let runVehLoopWithEnumerator =
-        let stopWatch = System.Diagnostics.Stopwatch.StartNew()
-        for vehObj in vissim.Net.Vehicles do
-            let veh = vehObj :?> VissimLib.IVehicle
-            let vehNumber   = veh.AttValue("No")      :?> int
-            let vehType     = veh.AttValue("VehType") |> string
-            let vehSpeed    = veh.AttValue("Speed")   :?> double
-            let vehPos      = veh.AttValue("Pos")     :?> double
-            let vehLinkLane = veh.AttValue("Lane")    |> string
-            printfn "No %d\t | Type %s\t | Speed %6.3f\t | Pos %10.3f\t | Lane %10s\t" vehNumber vehType vehSpeed vehPos vehLinkLane
-        stopWatch.Stop()
-        printfn "Loop all vehicles with Enumerator takes %f milliseconds" stopWatch.Elapsed.TotalMilliseconds
-
-    let runVehLoopWithIterator =
-        let stopWatch = System.Diagnostics.Stopwatch.StartNew()
-        let iter = vissim.Net.Vehicles.Iterator
-        while iter.Valid do
-            let veh = iter.Item :?> VissimLib.IVehicle
-            let vehNumber   = veh.AttValue("No")      :?> int
-            let vehType     = veh.AttValue("VehType") |> string
-            let vehSpeed    = veh.AttValue("Speed")   :?> double
-            let vehPos      = veh.AttValue("Pos")     :?> double
-            let vehLinkLane = veh.AttValue("Lane")    |> string
-            printfn "No %d\t | Type %s\t | Speed %6.3f\t | Pos %10.3f\t | Lane %10s\t" vehNumber vehType vehSpeed vehPos vehLinkLane
-            iter.Next()
-        stopWatch.Stop()
-        printfn "Loop all vehicles with iterator takes %f milliseconds" stopWatch.Elapsed.TotalMilliseconds
-
-    let runVehLoopWithGetMultiAttValues =
-        let stopWatch = System.Diagnostics.Stopwatch.StartNew()
-        let vehNumbers   = vissim.Net.Vehicles.GetMultiAttValues("No")      :?> Object [,]
-        let vehTypes     = vissim.Net.Vehicles.GetMultiAttValues("VehType") :?> Object [,]
-        let vehSpeeds    = vissim.Net.Vehicles.GetMultiAttValues("Speed")   :?> Object [,]
-        let vehPositions = vissim.Net.Vehicles.GetMultiAttValues("Pos")     :?> Object [,]
-        let vehLinkLanes = vissim.Net.Vehicles.GetMultiAttValues("Lane")    :?> Object [,]
-        for i in 0 .. Array2D.length1 vehNumbers - 1 do
-            printfn "No %d\t | Type %s\t | Speed %6.3f\t | Pos %10.3f\t | Lane %10s\t" (vehNumbers.[i,1] :?> int) (vehTypes.[i,1] |> string) (vehSpeeds.[i,1] :?> double) (vehPositions.[i,1] :?> double) (vehLinkLanes.[i,1] |> string)
-        stopWatch.Stop()
-        printfn "Loop all vehicles with GetMultiAttValues takes %f milliseconds" stopWatch.Elapsed.TotalMilliseconds
-
-    let runVehLoopWithGetMultipleAttributes =
-        let stopWatch = System.Diagnostics.Stopwatch.StartNew()
-        let allVehAttrs = vissim.Net.Vehicles.GetMultipleAttributes(id<obj[]> [| "No";"VehType";"Speed";"Pos"; "Lane" |]) :?> Object[,]
-        for i in 0.. Array2D.length1 allVehAttrs - 1 do
-            printfn "No %d\t | Type %s\t | Speed %6.3f\t | Pos %10.3f\t | Lane %10s\t" (allVehAttrs.[i,0] :?> int) (allVehAttrs.[i,1] |> string) (allVehAttrs.[i,2] :?> double) (allVehAttrs.[i,3] :?> double) (allVehAttrs.[i,4] |> string)
-        stopWatch.Stop()
-        printfn "Loop all vehicles with GetMultipleAttributes takes %f milliseconds" stopWatch.Elapsed.TotalMilliseconds
-    
-    runVehLoopWithGetAll
-    runVehLoopWithEnumerator
-    runVehLoopWithIterator
-    runVehLoopWithGetMultiAttValues
-    runVehLoopWithGetMultipleAttributes
-    vissim
-
 let moveAndDelVehicle (vissim: VissimLib.IVissim) =
     let veh = (vissim.Net.Vehicles.GetAll() :?> Object []).[1] :?> VissimLib.IVehicle
     let vehNum = veh.AttValue("No") |> string
@@ -285,17 +213,17 @@ let retrieveSimResults (vissim: VissimLib.IVissim) =
         let retrieveTravelTimesAllSimulations =
             let tt = ttMea.AttValue("TravTm(Avg,Avg,All") :?> double // sim | time interval | veh class
             let noVeh = ttMea.AttValue("Vehs(Avg,Avg,All") :?> double
-            printfn "MeaNumber %d Average travel time all time intervals of all simulations of all veh classes: %5.3f (number of vehicles %5.3f)" ttMeaNumber tt noVeh
+            printfn "MeaNumber %d avg travel time all time intervals of all simulations of all veh classes: %5.3f (number of vehicles %5.3f)" ttMeaNumber tt noVeh
         
         let retrieveTravelTimesCurrentSimulation =
              let tt = ttMea.AttValue("TravTm(Current,Max,20") :?> double // sim | time interval | veh class = HGV
              let noVeh = ttMea.AttValue("Vehs(Current,Max,20") :?> int
-             printfn "MeaNumber %d Max travel time all time intervals of current simulations of veh classes HGV: %5.3f (number of vehicles %d)" ttMeaNumber tt noVeh
+             printfn "MeaNumber %d ,ax travel time all time intervals of current simulation of veh classes HGV: %5.3f (number of vehicles %d)" ttMeaNumber tt noVeh
         
         let retrieveTravelTimes2ndSimulation1stInterval =
             let tt = ttMea.AttValue("TravTm(2,1,All") :?> double // sim | time interval | veh class = HGV
             let noVeh = ttMea.AttValue("Vehs(2,1,All") :?> int
-            printfn "MeaNumber %d travel time of the first time intervals of 2nd simulations of all veh classes: %5.3f (number of vehicles %d)" ttMeaNumber tt noVeh
+            printfn "MeaNumber %d travel time of 1st time interval of 2nd simulation of all veh classes: %5.3f (number of vehicles %d)" ttMeaNumber tt noVeh
    
         retrieveTravelTimesAllSimulations
         retrieveTravelTimesCurrentSimulation
@@ -377,9 +305,6 @@ let main argv =
     printfn "\n***Access Signals in Simulation Run Example:"
     vissim |> accessSignalsInSimulationRun |> ignore
     
-    printfn "\n***Loop Test Example:"
-    vissim |> loopTest |> ignore
-        
     vissim.Graphics.AttValue("QuickMode") <- false
     
     printfn "\n***Vehicle Manipulation Example:"
