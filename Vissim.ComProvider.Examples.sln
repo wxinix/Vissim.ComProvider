@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.30104.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BasicCommands", "examples\BasicCommands\BasicCommands.fsproj", "{C9794850-0B95-4550-9A4A-5914439D82F4}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "LoopPerformance", "examples\LoopPerformance\LoopPerformance.fsproj", "{D4D7ABAC-B88D-4BBB-9455-78F2289399EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,14 @@ Global
 		{C9794850-0B95-4550-9A4A-5914439D82F4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C9794850-0B95-4550-9A4A-5914439D82F4}.Release|x64.ActiveCfg = Release|x64
 		{C9794850-0B95-4550-9A4A-5914439D82F4}.Release|x64.Build.0 = Release|x64
+		{D4D7ABAC-B88D-4BBB-9455-78F2289399EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4D7ABAC-B88D-4BBB-9455-78F2289399EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4D7ABAC-B88D-4BBB-9455-78F2289399EA}.Debug|x64.ActiveCfg = Debug|x64
+		{D4D7ABAC-B88D-4BBB-9455-78F2289399EA}.Debug|x64.Build.0 = Debug|x64
+		{D4D7ABAC-B88D-4BBB-9455-78F2289399EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4D7ABAC-B88D-4BBB-9455-78F2289399EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4D7ABAC-B88D-4BBB-9455-78F2289399EA}.Release|x64.ActiveCfg = Release|x64
+		{D4D7ABAC-B88D-4BBB-9455-78F2289399EA}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
