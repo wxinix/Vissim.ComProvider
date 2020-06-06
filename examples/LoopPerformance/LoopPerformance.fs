@@ -51,10 +51,10 @@ let loadLayout (vissim: VissimLib.IVissim) =
     VissimLayout |> printfn "Layout \"%s\" loaded."
     vissim
 
-let loopTest (vissim: VissimLib.IVissim) =    
+let loopTest (vissim: VissimLib.IVissim) =
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
-    
-    let doGetAllLoop =        
+
+    let doGetAllLoop =
         let allVehicles = vissim.Net.Vehicles.GetAll().AsArray<VissimLib.IVehicle>()
         stopWatch.Stop()
         let timeGetAllElements = stopWatch.ElapsedMilliseconds;
@@ -67,7 +67,7 @@ let loopTest (vissim: VissimLib.IVissim) =
             let vehSpeed    = veh.AttValue(  "Speed") :?> double
             let vehPos      = veh.AttValue(    "Pos") :?> double
             let vehLinkLane = veh.AttValue(   "Lane") |>  string
-            printfn "No %d\t | Type %s\t | Speed %6.3f\t | Pos %10.3f\t | Lane %10s\t" 
+            printfn "No %d\t | Type %s\t | Speed %6.3f\t | Pos %10.3f\t | Lane %10s\t"
                     vehNumber vehType vehSpeed vehPos vehLinkLane
         stopWatch.Stop()
         timeGetAllElements, stopWatch.ElapsedMilliseconds
@@ -81,7 +81,7 @@ let loopTest (vissim: VissimLib.IVissim) =
             let vehSpeed    = veh.AttValue(  "Speed") :?> double
             let vehPos      = veh.AttValue(    "Pos") :?> double
             let vehLinkLane = veh.AttValue(   "Lane") |>  string
-            printfn "No %d\t | Type %s\t | Speed %6.3f\t | Pos %10.3f\t | Lane %10s\t" 
+            printfn "No %d\t | Type %s\t | Speed %6.3f\t | Pos %10.3f\t | Lane %10s\t"
                      vehNumber vehType vehSpeed vehPos vehLinkLane
         stopWatch.Stop()
         stopWatch.ElapsedMilliseconds
@@ -97,7 +97,7 @@ let loopTest (vissim: VissimLib.IVissim) =
             let vehSpeed    = veh.AttValue(  "Speed") :?> double
             let vehPos      = veh.AttValue(    "Pos") :?> double
             let vehLinkLane = veh.AttValue(   "Lane") |>  string
-            printfn "No %d\t | Type %s\t | Speed %6.3f\t | Pos %10.3f\t | Lane %10s\t" 
+            printfn "No %d\t | Type %s\t | Speed %6.3f\t | Pos %10.3f\t | Lane %10s\t"
                     vehNumber vehType vehSpeed vehPos vehLinkLane
             iter.Next()
         stopWatch.Stop()
@@ -112,10 +112,10 @@ let loopTest (vissim: VissimLib.IVissim) =
         let vehPositions = vissim.Net.Vehicles.GetMultiAttValues(    "Pos") :?> Object [,]
         let vehLinkLanes = vissim.Net.Vehicles.GetMultiAttValues(   "Lane") :?> Object [,]
         for i in 0 .. Array2D.length1 vehNumbers - 1 do
-            printfn "No %d\t | Type %s\t | Speed %6.3f\t | Pos %10.3f\t | Lane %10s\t" 
-                    (vehNumbers.[i,1]   :?> int   ) 
-                    (vehTypes.[i,1]     |>  string) 
-                    (vehSpeeds.[i,1]    :?> double) 
+            printfn "No %d\t | Type %s\t | Speed %6.3f\t | Pos %10.3f\t | Lane %10s\t"
+                    (vehNumbers.[i,1]   :?> int   )
+                    (vehTypes.[i,1]     |>  string)
+                    (vehSpeeds.[i,1]    :?> double)
                     (vehPositions.[i,1] :?> double)
                     (vehLinkLanes.[i,1] |>  string)
         stopWatch.Stop()
@@ -126,15 +126,15 @@ let loopTest (vissim: VissimLib.IVissim) =
         stopWatch.Restart()
         let allVehAttrs = vissim.Net.Vehicles.GetMultipleAttributes(id<obj[]> [| "No";"VehType";"Speed";"Pos"; "Lane" |]) :?> Object[,]
         for i in 0.. Array2D.length1 allVehAttrs - 1 do
-            printfn "No %d\t | Type %s\t | Speed %6.3f\t | Pos %10.3f\t | Lane %10s\t" 
-                    (allVehAttrs.[i,0] :?> int   ) 
-                    (allVehAttrs.[i,1] |>  string) 
-                    (allVehAttrs.[i,2] :?> double) 
-                    (allVehAttrs.[i,3] :?> double) 
+            printfn "No %d\t | Type %s\t | Speed %6.3f\t | Pos %10.3f\t | Lane %10s\t"
+                    (allVehAttrs.[i,0] :?> int   )
+                    (allVehAttrs.[i,1] |>  string)
+                    (allVehAttrs.[i,2] :?> double)
+                    (allVehAttrs.[i,3] :?> double)
                     (allVehAttrs.[i,4] |>  string)
         stopWatch.Stop()
         stopWatch.ElapsedMilliseconds
-    
+
     let (timeGettingAllElements, timeDoingGetAllLoop) = doGetAllLoop
     let timeDoingEnumLoop = doEnumeratorLoop
     let timeDoingIterLoop = doIteratorLoop
@@ -142,29 +142,29 @@ let loopTest (vissim: VissimLib.IVissim) =
     let timeDoingMultipleAttributesLoop = doMultipleAttributesLoop
 
     printfn "----------------------------------------------------------"
-    printfn "%10s \t%10s \t%10s \t%10s \t%18s \t%18s" 
-            "---" 
-            "GetAllLoop" 
-            "EnumLoop" 
-            "IterLoop" 
-            "MultiAttValLoop" 
-            "MultipleAttrsLoop"   
-    
-    printfn "%10s \t%10s \t%10s \t%10s \t%18s \t%18s" "Time(ms)" 
-            ((timeGettingAllElements |> string) + "|" + ((timeGettingAllElements + timeDoingGetAllLoop) |> string)) 
-            (timeDoingEnumLoop                              |> string) 
-            (timeDoingIterLoop                              |> string) 
-            (timeDoingMultiAttValuesLoop                    |> string) 
+    printfn "%10s \t%10s \t%10s \t%10s \t%18s \t%18s"
+            "---"
+            "GetAllLoop"
+            "EnumLoop"
+            "IterLoop"
+            "MultiAttValLoop"
+            "MultipleAttrsLoop"
+
+    printfn "%10s \t%10s \t%10s \t%10s \t%18s \t%18s" "Time(ms)"
+            ((timeGettingAllElements |> string) + "|" + ((timeGettingAllElements + timeDoingGetAllLoop) |> string))
+            (timeDoingEnumLoop                              |> string)
+            (timeDoingIterLoop                              |> string)
+            (timeDoingMultiAttValuesLoop                    |> string)
             (timeDoingMultipleAttributesLoop                |> string)
-    
-    printfn "%10s \t%10.3f \t%10.3f \t%10.3f \t%18.3f \t%18.3f"  
-            "Factor(x1)" 
-            ((double timeGettingAllElements + double timeDoingGetAllLoop) / double timeDoingMultipleAttributesLoop) 
-            (double timeDoingEnumLoop / double timeDoingMultipleAttributesLoop) 
-            (double timeDoingIterLoop / double timeDoingMultipleAttributesLoop) 
-            (double timeDoingMultiAttValuesLoop / double timeDoingMultipleAttributesLoop) 
+
+    printfn "%10s \t%10.3f \t%10.3f \t%10.3f \t%18.3f \t%18.3f"
+            "Factor(x1)"
+            ((double timeGettingAllElements + double timeDoingGetAllLoop) / double timeDoingMultipleAttributesLoop)
+            (double timeDoingEnumLoop / double timeDoingMultipleAttributesLoop)
+            (double timeDoingIterLoop / double timeDoingMultipleAttributesLoop)
+            (double timeDoingMultiAttValuesLoop / double timeDoingMultipleAttributesLoop)
             (double timeDoingMultipleAttributesLoop / double timeDoingMultipleAttributesLoop)
-    
+
     vissim
 
 [<EntryPoint; STAThread>]
@@ -172,12 +172,12 @@ let main argv =
     let vissim = VissimLib.VissimClass()
 
     vissim |> loadNetwork |> loadLayout |> ignore
-    vissim.Graphics.AttValue("QuickMode")    <- true   
+    vissim.Graphics.AttValue("QuickMode")    <- true
     vissim.Simulation.AttValue("SimBreakAt") <- 200
     vissim.SuspendUpdateGUI()
     vissim.Simulation.RunContinuous()
     printfn "\n***Loop Performance Benchmarking:"
-    vissim |> loopTest |> ignore    
+    vissim |> loopTest |> ignore
     vissim.Exit()
     Console.ReadLine() |> ignore
     0
