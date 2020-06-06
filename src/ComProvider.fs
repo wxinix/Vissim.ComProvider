@@ -95,7 +95,7 @@ type ComProvider(cfg: TypeProviderConfig) as this =
                         assemblies |> List.collect(fun asm -> asm.GetTypes() |> Seq.toList) ]
 
     do
-        this.AddNamespace("COM", types)
+        this.AddNamespace("Vissim.ComProvider", types)
         // this.RegisterProbingFolder(cfg.TemporaryFolder)
 
 [<TypeProviderAssembly>]

@@ -27,7 +27,7 @@ open System
 
 // Alias to Vissim 2020 COM Type Lib
 type VissimLib =
-    COM.``Vissim Object Library 20.0 64 Bit``.``14.0-win64``
+    Vissim.ComProvider.``Vissim Object Library 20.0 64 Bit``.``14.0-win64``
 
 [<EntryPoint; STAThread>]
 let main argv =

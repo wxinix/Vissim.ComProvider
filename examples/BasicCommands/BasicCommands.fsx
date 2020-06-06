@@ -8,14 +8,14 @@ open System
 open System.IO
 
 // Alias to Vissim 2020 COM Type Lib
-type VissimLib = COM.``Vissim Object Library 20.0 64 Bit``.``14.0-win64``
+type VissimLib = Vissim.ComProvider.``Vissim Object Library 20.0 64 Bit``.``14.0-win64``
 
 [<Literal>]
 let VissimComExampleFolder = @"C:\Users\Public\Documents\PTV Vision\PTV Vissim 2020\Examples Training\COM"
-let networkFile = VissimComExampleFolder + @"\Basic Commands\COM Basic Commands.inpx"
+let NetworkFile = VissimComExampleFolder + @"\Basic Commands\COM Basic Commands.inpx"
 
 let vissim = VissimLib.VissimClass()
-vissim.LoadNet networkFile
+vissim.LoadNet NetworkFile
 vissim.Graphics.AttValue("QuickMode") <- true
 vissim.Simulation.RunContinuous()
 vissim.Exit()

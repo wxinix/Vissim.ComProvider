@@ -27,28 +27,28 @@ open System
 
 // Alias to Vissim 2020 COM Type Lib
 type VissimLib =
-    COM.``Vissim Object Library 20.0 64 Bit``.``14.0-win64``
+     Vissim.ComProvider.``Vissim Object Library 20.0 64 Bit``.``14.0-win64``
 
 type Object with
     member this.AsArray<'T> () = this :?> Object [] |> Array.map(fun o -> o :?> 'T)
 
-let [<Literal>] VissimComExampleFolder =
+let [<Literal>] ComExampleFolder =
     @"C:\Users\Public\Documents\PTV Vision\PTV Vissim 2020\Examples Training\COM\"
 
-let [<Literal>] VissimNetwork =
-    VissimComExampleFolder + @"Basic Commands\COM Basic Commands.inpx"
+let [<Literal>] NetworkFile =
+    ComExampleFolder + @"Basic Commands\COM Basic Commands.inpx"
 
-let [<Literal>] VissimLayout =
-    VissimComExampleFolder  + @"Basic Commands\COM Basic Commands.layx"
+let [<Literal>] LayoutFile =
+    ComExampleFolder  + @"Basic Commands\COM Basic Commands.layx"
 
 let loadNetwork (vissim: VissimLib.IVissim) =
-    vissim.LoadNet VissimNetwork
-    VissimNetwork |> printfn "Network \"%s\" loaded."
+    vissim.LoadNet NetworkFile
+    NetworkFile |> printfn "Network \"%s\" loaded."
     vissim
 
 let loadLayout (vissim: VissimLib.IVissim) =
-    vissim.LoadLayout VissimLayout
-    VissimLayout |> printfn "Layout \"%s\" loaded."
+    vissim.LoadLayout LayoutFile
+    LayoutFile |> printfn "Layout \"%s\" loaded."
     vissim
 
 let loopTest (vissim: VissimLib.IVissim) =
