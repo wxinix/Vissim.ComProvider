@@ -213,17 +213,17 @@ let retrieveSimResults (vissim: VissimLib.IVissim) =
         let retrieveTravelTimesAllSimulations =
             let tt = ttMea.AttValue("TravTm(Avg,Avg,All") :?> double // sim | time interval | veh class
             let noVeh = ttMea.AttValue("Vehs(Avg,Avg,All") :?> double
-            printfn "MeaNumber %d avg travel time all time intervals of all simulations of all veh classes: %5.3f (number of vehicles %5.3f)" ttMeaNumber tt noVeh
+            printfn "MeaNumber %d avg all intervals of all simulations of all veh classes: %5.3f (number of vehicles %5.3f)" ttMeaNumber tt noVeh
         
         let retrieveTravelTimesCurrentSimulation =
              let tt = ttMea.AttValue("TravTm(Current,Max,20") :?> double // sim | time interval | veh class = HGV
              let noVeh = ttMea.AttValue("Vehs(Current,Max,20") :?> int
-             printfn "MeaNumber %d ,ax travel time all time intervals of current simulation of veh classes HGV: %5.3f (number of vehicles %d)" ttMeaNumber tt noVeh
+             printfn "MeaNumber %d max all intervals of current simulation of veh class HGV: %5.3f (number of vehicles %d)" ttMeaNumber tt noVeh
         
         let retrieveTravelTimes2ndSimulation1stInterval =
             let tt = ttMea.AttValue("TravTm(2,1,All") :?> double // sim | time interval | veh class = HGV
             let noVeh = ttMea.AttValue("Vehs(2,1,All") :?> int
-            printfn "MeaNumber %d travel time of 1st time interval of 2nd simulation of all veh classes: %5.3f (number of vehicles %d)" ttMeaNumber tt noVeh
+            printfn "MeaNumber %d travel time 1st interval of 2nd simulation of all veh classes: %5.3f (number of vehicles %d)" ttMeaNumber tt noVeh
    
         retrieveTravelTimesAllSimulations
         retrieveTravelTimesCurrentSimulation
