@@ -12,7 +12,7 @@ open System.Runtime.InteropServices
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("Wuping Xin Products")>]
 [<assembly: AssemblyProduct("Vissim.ComProvider.TypeLibs")>]
-[<assembly: AssemblyCopyright("Copyright ©  2020 Wuping Xin")>]
+[<assembly: AssemblyCopyright("Copyright © 2020 Wuping Xin")>]
 [<assembly: AssemblyTrademark("")>]
 [<assembly: AssemblyCulture("")>]
 
