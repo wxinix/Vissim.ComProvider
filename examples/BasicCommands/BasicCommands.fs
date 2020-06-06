@@ -32,14 +32,9 @@ type VissimLib =
 type Object with
     member this.AsArray<'T> () = this :?> Object [] |> Array.map(fun o -> o :?> 'T)
 
-let [<Literal>] ComExampleFolder =
-    @"C:\Users\Public\Documents\PTV Vision\PTV Vissim 2020\Examples Training\COM\"
-
-let [<Literal>] NetworkFile =
-    ComExampleFolder + @"Basic Commands\COM Basic Commands.inpx"
-
-let [<Literal>] LayoutFile =
-    ComExampleFolder  + @"Basic Commands\COM Basic Commands.layx"
+let [<Literal>] ExampleFolder = @"C:\Users\Public\Documents\PTV Vision\PTV Vissim 2020\Examples Training\COM\"
+let [<Literal>] LayoutFile    = ExampleFolder + @"Basic Commands\COM Basic Commands.layx"
+let [<Literal>] NetworkFile   = ExampleFolder + @"Basic Commands\COM Basic Commands.inpx"
 
 let loadNetwork (vissim: VissimLib.IVissim) =
     vissim.LoadNet NetworkFile
@@ -60,9 +55,9 @@ let setLinkName linkNo linkName (vissim: VissimLib.IVissim) =
     printfn "Link name \"%s\" set to Link [%d]" linkName linkNo
     vissim
 
-let setSignalControllerProgram scNo programNo (vissim: VissimLib.IVissim) =
-    vissim.Net.SignalControllers.ItemByKey(scNo).AttValue("ProgNo") <- programNo
-    printfn "Signal controller [%d] has new program No [%d]" scNo programNo
+let setSignalControllerProgram scNo progNo (vissim: VissimLib.IVissim) =
+    vissim.Net.SignalControllers.ItemByKey(scNo).AttValue("ProgNo") <- progNo
+    printfn "Signal controller [%d] has new program No [%d]" scNo progNo
     vissim
 
 let setStaticRouteRelativeFlow decision route flow (vissim: VissimLib.IVissim) =
@@ -70,33 +65,28 @@ let setStaticRouteRelativeFlow decision route flow (vissim: VissimLib.IVissim) =
     printfn "Static route [%d] of decision [%d] has new relative flow [%f]" decision route flow
     vissim
 
-let setVehicleInput inputNo newVolume (vissim: VissimLib.IVissim) =
+let setVehicleInput inputNo newVol (vissim: VissimLib.IVissim) =
     let input = vissim.Net.VehicleInputs.ItemByKey(inputNo)
-    input.AttValue("Volume(1)") <- newVolume
-    input.AttValue("Cont(2)")   <- false
+    input.AttValue("Volume(1)") <- newVol
+    input.AttValue(  "Cont(2)") <- false
     input.AttValue("Volume(2)") <- 400
-    printfn "Vehicle input [%d] set new volume[1] = %d volume[2] = %d" inputNo newVolume 400
+    printfn "Vehicle input [%d] set new volume[1] = %d volume[2] = %d" inputNo newVol 400
     vissim
 
-let setVehicleComposition vehCompositionNo (vissim: VissimLib.IVissim) =
-    let relFlows = vissim.Net
-                         .VehicleCompositions
-                         .ItemByKey(vehCompositionNo)
-                         .VehCompRelFlows
-                         .GetAll()
-                         .AsArray<VissimLib.IVehicleCompositionRelativeFlow>()
+let setVehicleComposition vehCompNo (vissim: VissimLib.IVissim) =
+    let relFlows = vissim.Net.VehicleCompositions.ItemByKey(vehCompNo).VehCompRelFlows.GetAll().AsArray<VissimLib.IVehicleCompositionRelativeFlow>()
 
-    relFlows.[0].AttValue("VehType") <- 100
+    relFlows.[0].AttValue(      "VehType") <- 100
     relFlows.[0].AttValue("DesSpeedDistr") <- 50
-    relFlows.[0].AttValue("RelFlow") <- 0.9
-    relFlows.[1].AttValue("RelFlow") <- 0.1
+    relFlows.[0].AttValue(      "RelFlow") <- 0.9
+    relFlows.[1].AttValue(      "RelFlow") <- 0.1
 
-    printfn "Vehicle compositions total count [%d], and [%d] has been set." relFlows.Length vehCompositionNo
+    printfn "Vehicle compositions total count [%d], and [%d] has been set." relFlows.Length vehCompNo
     vissim
 
 let getLinkMultiAttValues attr (vissim: VissimLib.IVissim) =
     let values = vissim.Net.Links.GetMultiAttValues(attr) :?> Object[,]
-    values |> Array2D.iteri(fun i j item -> printfn "\t Link[%2d] Attribute[%d] Value %s" i j (item |> string) )
+    values |> Array2D.iteri(fun i j item -> printfn "\t Link[%02d] attr[%d] = %s" i j (item |> string) )
     vissim
 
 let setLinkMultiAttValues attr values (vissim: VissimLib.IVissim) =
@@ -106,7 +96,7 @@ let setLinkMultiAttValues attr values (vissim: VissimLib.IVissim) =
 
 let getLinkMultipleAttributes attrs (vissim: VissimLib.IVissim) =
     let values = vissim.Net.Links.GetMultipleAttributes(attrs) :?> Object[,]
-    values |> Array2D.iteri(fun i j item -> printfn "\t Link[%2d] Attribute[%d] Value %s" i j (item |> string) )
+    values |> Array2D.iteri(fun i j item -> printfn "\t Link[%02d] attr[%d] = %s" i j (item |> string) )
     vissim
 
 let setLinkMultipleAttributes attrs values (vissim: VissimLib.IVissim) =
@@ -115,17 +105,16 @@ let setLinkMultipleAttributes attrs values (vissim: VissimLib.IVissim) =
     vissim
 
 let setLinkAllAttValues attr value add (vissim: VissimLib.IVissim) =
-    vissim.Net.Links.SetAllAttValues(attr, value, add) // add only meaningful for numbers
-    printfn "SetAllAttValues attr[%s] value[%s] add[%b]" attr (value.ToString()) add
+    vissim.Net.Links.SetAllAttValues(attr, value, add) // add meaningful for numbers only
+    printfn "SetAllAttValues attr[%s] = [%s] add = [%b]" attr (id<obj> value |> string) add
     vissim
 
 let runSimulation (vissim: VissimLib.IVissim) =
-    vissim.Simulation.AttValue("RandSeed") <- 42
-    vissim.Simulation.AttValue("SimPeriod") <- 600
-    vissim.Simulation.RunSingleStep()
-    vissim.Simulation.AttValue("SimBreakAt") <- 200
+    vissim.Simulation.AttValue(      "RandSeed") <- 42
+    vissim.Simulation.AttValue(     "SimPeriod") <- 600
+    vissim.Simulation.AttValue(    "SimBreakAt") <- 200
     vissim.Simulation.AttValue("UseMaxSimSpeed") <- true
-    vissim.Simulation.AttValue("SimSpeed") <- 10
+    vissim.Simulation.AttValue(      "SimSpeed") <- 10
     vissim.Simulation.RunContinuous()
     vissim.Simulation.Stop()
     vissim
@@ -133,23 +122,23 @@ let runSimulation (vissim: VissimLib.IVissim) =
 let accessSignalsInSimulationRun (vissim: VissimLib.IVissim) =
     vissim.Simulation.AttValue("SimBreakAt") <- 198
     vissim.Simulation.RunContinuous()
-    vissim.Net.SignalHeads.ItemByKey(1).AttValue("SigState") |> string |> printfn "Actual state of SignalHead (%d) is: %s" 1
+    vissim.Net.SignalHeads.ItemByKey(1).AttValue("SigState") |> string |> printfn "Actual state of SignalHead[%d] is: %s" 1
     let sg = vissim.Net.SignalControllers.ItemByKey(1).SGs.ItemByKey(1)
     sg.AttValue("SigState") <- "GREEN"  // "ContrByCOM" automatically set true
     vissim.Simulation.AttValue("SimBreakAt") <- 200
     vissim.Simulation.RunContinuous()
-    sg.AttValue("ContrByCOM") <- false
+    sg.AttValue("ContrByCOM") <- false  // Restore to be false
     vissim
 
 let moveAndDelVehicle (vissim: VissimLib.IVissim) =
     let veh = (vissim.Net.Vehicles.GetAll() :?> Object []).[1] :?> VissimLib.IVehicle
-    let vehNum = veh.AttValue("No") |> string
-    printfn "Vehicle No[%s] selected, and to be moved." vehNum
+    let vehNo = veh.AttValue("No")
+    let moveVeh link lane newLinkPos = veh.MoveToLinkPosition(link, lane, newLinkPos)    
+    vehNo |> string |> printfn "VehNo[%s] selected, and to be moved." 
     veh.AttValue("DesSpeed") <- 30
-    let moveVeh (link: obj) lane (newLinkPos: float) = veh.MoveToLinkPosition(link, lane, newLinkPos)
     (1, 1, 70.0) |||> moveVeh
     vissim.Simulation.RunSingleStep()
-    vissim.Net.Vehicles.RemoveVehicle(vehNum)
+    vissim.Net.Vehicles.RemoveVehicle(vehNo)
     vissim
 
 let addNewVehicle (vissim: VissimLib.IVissim) =
@@ -158,8 +147,8 @@ let addNewVehicle (vissim: VissimLib.IVissim) =
     vissim
 
 let takeScreenshots (vissim: VissimLib.IVissim) =
+    let camPos = (270.0, 30.0, 15.0, 45.0, 10.0)
     let originalNetworkPos = (250.0, 30.0, 350.0, 135.0)
-    let camPosition = (270.0, 30.0, 15.0, 45.0, 10.0)
 
     let take2DScreenshots =
         vissim.Graphics.CurrentNetworkWindow.ZoomTo originalNetworkPos
@@ -168,14 +157,14 @@ let takeScreenshots (vissim: VissimLib.IVissim) =
 
     let take3DScreenshots =
         vissim.Graphics.CurrentNetworkWindow.AttValue("3D") <- true
-        vissim.Graphics.CurrentNetworkWindow.SetCameraPositionAndAngle camPosition
+        vissim.Graphics.CurrentNetworkWindow.SetCameraPositionAndAngle camPos
         vissim.Graphics.CurrentNetworkWindow.Screenshot("screenshot3D.jpg", 1.0)
         printfn "screenshot3D.jpg saved!"
 
     let restore2DNetworkPosition =
         vissim.Graphics.CurrentNetworkWindow.AttValue("3D") <- false
         vissim.Graphics.CurrentNetworkWindow.ZoomTo originalNetworkPos
-        printfn "Network position restored after taking screenshotsd!"
+        printfn "Network position restored after taking screenshots!"
 
     take2DScreenshots
     take3DScreenshots
@@ -185,68 +174,69 @@ let takeScreenshots (vissim: VissimLib.IVissim) =
     vissim
 
 let retrieveSimResults (vissim: VissimLib.IVissim) =
-    let generateResultsFromSimRuns =
+    let generateSimulationResults =
         vissim.SuspendUpdateGUI()
 
         for simRun in vissim.Net.SimulationRuns do
             vissim.Net.SimulationRuns.RemoveSimulationRun(simRun :?> VissimLib.ISimulationRun)
 
-        vissim.Simulation.AttValue("SimPeriod") <- 600
-        vissim.Simulation.AttValue("SimBreakAt") <- 0
+        vissim.Simulation.AttValue(     "SimPeriod") <- 600
+        vissim.Simulation.AttValue(    "SimBreakAt") <- 0
         vissim.Simulation.AttValue("UseMaxSimSpeed") <- true
 
-        for i in 1..3 do
-            vissim.Simulation.AttValue("RandSeed") <- i
+        for rs in 1..3 do
+            vissim.Simulation.AttValue("RandSeed") <- rs
             vissim.Simulation.RunContinuous()
-
-        let simRuns = vissim.Net.SimulationRuns.GetMultipleAttributes(id<obj[]> [| "Timestamp"; "RandSeed"; "SimEnd" |]) :?> Object [,]
-
+        
+        let simRuns = 
+            vissim.Net.SimulationRuns.GetMultipleAttributes(id<obj[]> [| "Timestamp"; "RandSeed"; "SimEnd" |]) :?> Object [,]
+        
         for i in 0 .. (Array2D.length1 simRuns) - 1 do
             printfn "%s |%s |%s" (simRuns.[i,0] |> string) (simRuns.[i,1] |> string) (simRuns.[i,2] |> string)
 
         vissim.ResumeUpdateGUI(false)
 
     let retrieveTravelTimes =
-        let ttMeaNumber = 2
-        let ttMea = vissim.Net.VehicleTravelTimeMeasurements.ItemByKey(ttMeaNumber)
+        let ttMeaNo = 2
+        let ttMea = vissim.Net.VehicleTravelTimeMeasurements.ItemByKey(ttMeaNo)
     
         let retrieveTravelTimesAllSimulations =
-            let tt = ttMea.AttValue("TravTm(Avg,Avg,All") :?> double // sim | time interval | veh class
-            let noVeh = ttMea.AttValue("Vehs(Avg,Avg,All") :?> double
-            printfn "MeaNumber %d avg all intervals of all simulations of all veh classes: %5.3f (number of vehicles %5.3f)" ttMeaNumber tt noVeh
+            let travTm = ttMea.AttValue("TravTm(Avg,Avg,All") :?> double    // sim | time interval | veh class = ALL
+            let vehs   = ttMea.AttValue(  "Vehs(Avg,Avg,All") :?> double
+            (ttMeaNo, travTm, vehs) |||> printfn "\nTravelTimeMeasurement[%d] | SIMRUN = AVG | INTERVAL = AVG | VCLS = ALL: %5.3f (%5.3f vehs)"         
         
         let retrieveTravelTimesCurrentSimulation =
-             let tt = ttMea.AttValue("TravTm(Current,Max,20") :?> double // sim | time interval | veh class = HGV
-             let noVeh = ttMea.AttValue("Vehs(Current,Max,20") :?> int
-             printfn "MeaNumber %d max all intervals of current simulation of veh class HGV: %5.3f (number of vehicles %d)" ttMeaNumber tt noVeh
+            let travTm = ttMea.AttValue("TravTm(Current,Max,20") :?> double // sim | time interval | veh class = HGV
+            let vehs   = ttMea.AttValue(  "Vehs(Current,Max,20") :?> int
+            (ttMeaNo, travTm, vehs) |||> printfn "TravelTimeMeasurement[%d] | SIMRUN = CUR | INTERVAL = MAX | VCLS = HGV: %5.3f (%d vehs)"        
         
-        let retrieveTravelTimes2ndSimulation1stInterval =
-            let tt = ttMea.AttValue("TravTm(2,1,All") :?> double // sim | time interval | veh class = HGV
-            let noVeh = ttMea.AttValue("Vehs(2,1,All") :?> int
-            printfn "MeaNumber %d travel time 1st interval of 2nd simulation of all veh classes: %5.3f (number of vehicles %d)" ttMeaNumber tt noVeh
+        let retrieveTravelTimesBySimulationRunAndInterval =
+            let travTm = ttMea.AttValue("TravTm(2,1,All") :?> double        // sim | time interval | veh class = HGV
+            let vehs   = ttMea.AttValue(  "Vehs(2,1,All") :?> int
+            (ttMeaNo, travTm, vehs) |||> printfn "TravelTimeMeasurement[%d] | SIMRUN = 2 | INTERVAL = 1 | VCLS = ALL: %5.3f (%d vehs)"
    
         retrieveTravelTimesAllSimulations
         retrieveTravelTimesCurrentSimulation
-        retrieveTravelTimes2ndSimulation1stInterval
+        retrieveTravelTimesBySimulationRunAndInterval
     
     let retrieveDataCollectionMeasurements =
-        let dcNumber = 1
-        let dcMeas = vissim.Net.DataCollectionMeasurements.ItemByKey(dcNumber)
-        let noVeh = dcMeas.AttValue("Vehs(Avg,1,All") :?> int
-        let spd = dcMeas.AttValue("Speed(Avg,1,All") :?> double
-        let accel = dcMeas.AttValue("Acceleration(Avg,1,All") :?> double
-        let len = dcMeas.AttValue("Length(Avg,1,All") :?> double
-        printfn "Data Collection # %d avg values of all sim runs vehs: %d spd: %f accel: %f len: %f" dcNumber noVeh spd accel len
+        let dcNo  = 1
+        let dcMea = vissim.Net.DataCollectionMeasurements.ItemByKey(dcNo)
+        let vehs  = dcMea.AttValue(        "Vehs(Avg,1,All") :?> int
+        let speed = dcMea.AttValue(       "Speed(Avg,1,All") :?> double
+        let accel = dcMea.AttValue("Acceleration(Avg,1,All") :?> double
+        let len   = dcMea.AttValue(      "Length(Avg,1,All") :?> double        
+        printfn "\nDataCollection[%d] | SIMRUN = AVG | INTERVAL = 1 | VCLS = ALL: %d (vehs), %5.3f (speed), %5.3f (accel), %5.3f (length)"  dcNo vehs speed accel len 
  
-    let retrieveQueueCounters =
-        let qcNumber = 1
-        let maxQ = vissim.Net.QueueCounters.ItemByKey(qcNumber).AttValue("QLenMax(Avg,Avg") :?> double
-        printfn "Avg max queue length of all sim runs and time intervals of q counter %d: %f" qcNumber maxQ
+    let retrieveQueueCounterMeasurements =
+        let qcNo = 1
+        let maxQ = vissim.Net.QueueCounters.ItemByKey(qcNo).AttValue("QLenMax(Avg,Avg") :?> double
+        printfn "\nQueueCounter[%d] | SIMRUN = AVG | INTERVAL = ALL: %5.3f (max_queue_length)" qcNo maxQ
    
-    generateResultsFromSimRuns
+    generateSimulationResults
     retrieveTravelTimes
     retrieveDataCollectionMeasurements
-    retrieveQueueCounters
+    retrieveQueueCounterMeasurements
     vissim
 
 [<EntryPoint; STAThread>]
