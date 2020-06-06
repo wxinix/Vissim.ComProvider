@@ -7,7 +7,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BasicCommands", "examples\B
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "LoopPerformance", "examples\LoopPerformance\LoopPerformance.fsproj", "{D4D7ABAC-B88D-4BBB-9455-78F2289399EA}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "VissimStealthCloak", "examples\VissimStealthCloak\VissimStealthCloak.fsproj", "{B5D0A0B0-8CCD-48F9-8ADA-ADD750EE4554}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "HideVissimGui", "examples\VissimStealthCloak\HideVissimGui.fsproj", "{B5D0A0B0-8CCD-48F9-8ADA-ADD750EE4554}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Car2X", "examples\Car2X\Car2X.fsproj", "{613EDB35-071F-484F-8EFB-F9079951C26C}"
 EndProject
