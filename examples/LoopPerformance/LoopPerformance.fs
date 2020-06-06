@@ -32,14 +32,14 @@ type VissimLib =
 type Object with
     member this.AsArray<'T> () = this :?> Object [] |> Array.map(fun o -> o :?> 'T)
 
-let [<Literal>] ComExampleFolder =
+let [<Literal>] ExampleFolder =
     @"C:\Users\Public\Documents\PTV Vision\PTV Vissim 2020\Examples Training\COM\"
 
 let [<Literal>] NetworkFile =
-    ComExampleFolder + @"Basic Commands\COM Basic Commands.inpx"
+    ExampleFolder + @"Basic Commands\COM Basic Commands.inpx"
 
 let [<Literal>] LayoutFile =
-    ComExampleFolder  + @"Basic Commands\COM Basic Commands.layx"
+    ExampleFolder  + @"Basic Commands\COM Basic Commands.layx"
 
 let loadNetwork (vissim: VissimLib.IVissim) =
     vissim.LoadNet NetworkFile
