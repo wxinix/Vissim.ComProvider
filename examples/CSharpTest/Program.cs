@@ -26,14 +26,15 @@ namespace CSharpTest
 {
     class Program
     {
-        public readonly static string ComExampleFolder = @"C:\Users\Public\Documents\PTV Vision\PTV Vissim 2020\Examples Training\COM\";
-        public readonly static string NetworkFile = ComExampleFolder + @"Basic Commands\COM Basic Commands.inpx";
-        public readonly static string LayoutFile = ComExampleFolder + @"Basic Commands\COM Basic Commands.layx";
+        static readonly string _exampleFolder = @"C:\Users\Public\Documents\PTV Vision\PTV Vissim 2020\Examples Training\COM\";
+        static readonly string _layoutFile    = _exampleFolder + @"Basic Commands\COM Basic Commands.layx";
+        static readonly string _networkFile   = _exampleFolder + @"Basic Commands\COM Basic Commands.inpx";
 
         static void Main(string[] args)
         {
             var vissim = new VissimLib200.VissimClass();
-            vissim.LoadNet(NetworkFile);
+            vissim.LoadNet(_networkFile);
+            vissim.LoadLayout(_layoutFile);
             vissim.Graphics.AttValue["QuickMode"] = true; 
             vissim.Simulation.RunContinuous();
             vissim.Exit();
