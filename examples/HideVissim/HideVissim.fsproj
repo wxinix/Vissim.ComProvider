@@ -8,7 +8,7 @@
     <ProjectGuid>{b5d0a0b0-8ccd-48f9-8ada-add750ee4554}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>Vissim.ComProvider.Tests</RootNamespace>
-    <AssemblyName>HideVissimGui</AssemblyName>
+    <AssemblyName>HideVissim</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
@@ -80,7 +80,7 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-    <Compile Include="HideVissimGui.fs" />
+    <Compile Include="HideVissim.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
