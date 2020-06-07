@@ -1,6 +1,6 @@
 # Vissim COM Type Provider
 
-Vissim COM type provider is a F# compiler plugin, making Vissim COM type system part of the compiler type system. The added types are automatically visible to user code at compile time, without importing of any type libraries or adding reference assemblies explicilty.
+Vissim COM type provider is a F# compiler plugin, making Vissim COM type system part of the compiler type system. The added types are automatically visible to user code at **compile time**, without importing of any type libraries or adding reference assemblies explicilty.
 
 The great thing is, Vissim COM type provider generates Vissim COM types based on dynamic schemas, which are the type libraries registered in Windows Registry. This means, whether you install new Vissim versions, uninstall old versions or whatever – you don’t have to import (or re-import) anything. The Vissim COM type provider will automatically pick up all of the installed up-t-date Vissim COM type libraries from Windows Registry (as its data source) at ***compile time***. Even better is that the same Vissim COM type provider can be used in both F# scripting and F# compiled applications transparently. Check these [F# examples](https://github.com/wxinix/Vissim.ComProvider/tree/master/examples) to learn how to take advantage the convenience and flexibility of Vissim COM type provider.
 
@@ -73,15 +73,15 @@ namespace CSharpTest
 {
     class Program
     {
-        public readonly static string ComExampleFolder = @"C:\Users\Public\Documents\PTV Vision\PTV Vissim 2020\Examples Training\COM\";
-        public readonly static string NetworkFile = ComExampleFolder + @"Basic Commands\COM Basic Commands.inpx";
-        public readonly static string LayoutFile = ComExampleFolder + @"Basic Commands\COM Basic Commands.layx";
+        static readonly string _exampleFolder = @"C:\Users\Public\Documents\PTV Vision\PTV Vissim 2020\Examples Training\COM\";
+        static readonly string _networkFile   = _exampleFolder + @"Basic Commands\COM Basic Commands.inpx";
+        static readonly string _layoutFile    = _exampleFolder + @"Basic Commands\COM Basic Commands.layx";
 
         static void Main(string[] args)
         {
             var vissim = new VissimLib200.VissimClass();
             vissim.LoadNet(NetworkFile);
-            vissim.Graphics.AttValue["QuickMode"] = true; 
+            vissim.Graphics.AttValue["QuickMode"] = true;
             vissim.Simulation.RunContinuous();
             vissim.Exit();
             Console.ReadLine();
