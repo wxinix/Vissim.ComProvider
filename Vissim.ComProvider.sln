@@ -2,9 +2,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Vissim.ComProvider", "src\Vissim.ComProvider.fsproj", "{7E90D6CE-A10B-4858-A5BC-41DF7250CBCA}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Vissim.ComProvider", "Vissim.ComProvider\Vissim.ComProvider.fsproj", "{7E90D6CE-A10B-4858-A5BC-41DF7250CBCA}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Vissim.ComProvider.TypeLibs", "src\Vissim.ComProvider.TypeLibs\Vissim.ComProvider.TypeLibs.fsproj", "{BE294C6B-774A-44E9-80DA-0801E3F13D9F}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Vissim.ComProvider.TypeLibs", "Vissim.ComProvider.TypeLibs\Vissim.ComProvider.TypeLibs.fsproj", "{BE294C6B-774A-44E9-80DA-0801E3F13D9F}"
+EndProject
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "Vissim.ComProvider.Utilities", "Vissim.ComProvider.Utilities\Vissim.ComProvider.Utilities.elements", "{14FEEBF2-300A-4EA2-9055-1042D82A4F97}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +22,11 @@ Global
 		{BE294C6B-774A-44E9-80DA-0801E3F13D9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE294C6B-774A-44E9-80DA-0801E3F13D9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE294C6B-774A-44E9-80DA-0801E3F13D9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14FEEBF2-300A-4EA2-9055-1042D82A4F97}.Debug|Any CPU.ActiveCfg = Debug
+		{14FEEBF2-300A-4EA2-9055-1042D82A4F97}.Debug|Any CPU.Build.0 = Debug
+		{14FEEBF2-300A-4EA2-9055-1042D82A4F97}.Debug|Any CPU.Deploy.0 = Debug
+		{14FEEBF2-300A-4EA2-9055-1042D82A4F97}.Release|Any CPU.ActiveCfg = Release
+		{14FEEBF2-300A-4EA2-9055-1042D82A4F97}.Release|Any CPU.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

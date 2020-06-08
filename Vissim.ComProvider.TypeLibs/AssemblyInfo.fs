@@ -10,7 +10,7 @@ open System.Runtime.InteropServices
 [<assembly: AssemblyTitle("Vissim COM Type Provider for C# Applications")>]
 [<assembly: AssemblyDescription("")>]
 [<assembly: AssemblyConfiguration("")>]
-[<assembly: AssemblyCompany("Wuping Xin Products")>]
+[<assembly: AssemblyCompany("Developed by Wuping Xin")>]
 [<assembly: AssemblyProduct("Vissim.ComProvider.TypeLibs")>]
 [<assembly: AssemblyCopyright("Copyright © 2020 Wuping Xin")>]
 [<assembly: AssemblyTrademark("")>]
