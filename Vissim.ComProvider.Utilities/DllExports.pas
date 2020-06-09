@@ -24,30 +24,57 @@ namespace Vissim.ComProvider.Utilities;
 uses
   rtl;
 
-  [SymbolName('GetPluginInfo'), DLLExport, CallingConvention(CallingConvention.Stdcall)]
-  method GetPluginInfo(aPluginInfo: LPWSTR; aSize: DWORD): DWORD;
+  [SymbolName('HideVissim'), DLLExport, CallingConvention(CallingConvention.Stdcall)]
+  method HideVissim(aVissim: IUnknown);
   begin
-    exit 0;
+    var pid: DWORD := 0;
+    if not Succeeded(CoGetServerPID(aVissim, var pid)) then exit;
+    var (success, hnd) := FindMainWindow(pid);
+    if success then ShowWindow(hnd, SW_HIDE);
+  end;
+
+  [SymbolName('ShowVissim'), DLLExport, CallingConvention(CallingConvention.Stdcall)]
+  method ShowVissim(aVissim: IUnknown);
+  begin
+    var pid: DWORD := 0;
+    if not Succeeded(CoGetServerPID(aVissim, var pid)) then exit;
+    var (success, hnd) := FindMainWindow(pid);
+    if success then ShowWindow(hnd, SW_NORMAL);
+  end;
+
+  [SymbolName('GetVissimSeverPID'), DLLExport, CallingConvention(CallingConvention.Stdcall)]
+  method GetVissimSeverPID(aVissim: IUnknown): DWORD;
+  begin
+    result := 0;
+    CoGetServerPID(aVissim, var result);
+  end;
+
+  [SymbolName('GetVissimMainWindowHandle'), DLLExport, CallingConvention(CallingConvention.Stdcall)]
+  method GetVissimMainWindowHandle(aVissim: IUnknown): HWND;
+  begin
+    var pid: DWORD := 0;
+    if not Succeeded(CoGetServerPID(aVissim, var pid)) then exit nil;
+    (_, result) := FindMainWindow(pid);
   end;
 
   {/*! Dll entry point. */}
   [SymbolName('__elements_dll_main', ReferenceFromMain := true)]
   method DllMain(aModule: HMODULE; aReason: DWORD; aReserved: ^Void): Boolean;
   begin
-    method GetPluginDllPath: String; 
+    method GetPluginDllPath: String;
     begin
       var lBuffer: array of Char := new Char[MAX_PATH];
-      GetModuleFileName(aModule, lBuffer, MAX_PATH); 
+      GetModuleFileName(aModule, lBuffer, MAX_PATH);
       exit String.FromCharArray(lBuffer);
     end;
 
     case aReason of
       DLL_PROCESS_ATTACH:
-        exit true;        
+        exit true; 
       DLL_PROCESS_DETACH:
-        exit true;      
+        exit true;
       DLL_THREAD_ATTACH:
-        exit true;      
+        exit true;
       DLL_THREAD_DETACH:
         exit true;
     end;
