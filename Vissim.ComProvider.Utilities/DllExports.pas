@@ -27,34 +27,25 @@ uses
   [SymbolName('HideVissim'), DLLExport, CallingConvention(CallingConvention.Stdcall)]
   method HideVissim(aVissim: IUnknown);
   begin
-    var pid: DWORD := 0;
-    if not Succeeded(CoGetServerPID(aVissim, var pid)) then exit;
-    var (success, hnd) := FindMainWindow(pid);
-    if success then ShowWindow(hnd, SW_HIDE);
+    VissimComProviderHelper.HideVissim(aVissim);
   end;
 
   [SymbolName('ShowVissim'), DLLExport, CallingConvention(CallingConvention.Stdcall)]
   method ShowVissim(aVissim: IUnknown);
   begin
-    var pid: DWORD := 0;
-    if not Succeeded(CoGetServerPID(aVissim, var pid)) then exit;
-    var (success, hnd) := FindMainWindow(pid);
-    if success then ShowWindow(hnd, SW_NORMAL);
+    VissimComProviderHelper.ShowVissim(aVissim);
   end;
 
   [SymbolName('GetVissimSeverPID'), DLLExport, CallingConvention(CallingConvention.Stdcall)]
   method GetVissimSeverPID(aVissim: IUnknown): DWORD;
   begin
-    result := 0;
-    CoGetServerPID(aVissim, var result);
+    result := VissimComProviderHelper.GetVissimSeverPID(aVissim);
   end;
 
   [SymbolName('GetVissimMainWindowHandle'), DLLExport, CallingConvention(CallingConvention.Stdcall)]
   method GetVissimMainWindowHandle(aVissim: IUnknown): HWND;
   begin
-    var pid: DWORD := 0;
-    if not Succeeded(CoGetServerPID(aVissim, var pid)) then exit nil;
-    (_, result) := FindMainWindow(pid);
+    result := VissimComProviderHelper.GetVissimMainWindowHandle(aVissim);
   end;
 
   {/*! Dll entry point. */}
@@ -70,11 +61,17 @@ uses
 
     case aReason of
       DLL_PROCESS_ATTACH:
-        exit true; 
+      begin
+        VissimComProviderHelper.Initialize;
+        exit true;
+      end;
+      
       DLL_PROCESS_DETACH:
         exit true;
+      
       DLL_THREAD_ATTACH:
         exit true;
+      
       DLL_THREAD_DETACH:
         exit true;
     end;

@@ -136,7 +136,7 @@ begin
   if ((data^.Pid <> pid) or (not IsMainWindow(aHnd))) then begin
     result := true;
   end else begin
-    data.Hnd := aHnd;
+    if not assigned(data.Hnd) then data.Hnd := aHnd;
     result := false; 
   end;
 end;
@@ -154,6 +154,51 @@ begin
   EnumWindows(@EnumWindowsCallback, LPARAM(@data));
   result := (assigned(data.Hnd), data.Hnd);
 end;
+
+type
+  VissimComProviderHelper = public class
+  private
+    class var fHwndCache: Dictionary<NativeUInt, HWND> := nil;
+    
+  public
+    class method ShowVissim(aVissim: IUnknown);
+    begin
+      var hnd := GetVissimMainWindowHandle(aVissim);
+      if assigned(hnd) then ShowWindow(hnd, SW_NORMAL); 
+    end;
+
+    class method HideVissim(aVissim: IUnknown);
+    begin
+      var hnd := GetVissimMainWindowHandle(aVissim);
+      if assigned(hnd) then ShowWindow(hnd, SW_HIDE); 
+    end;
+    
+    class method GetVissimMainWindowHandle(aVissim: IUnknown): HWND;
+    begin
+      var key := NativeUInt(^Void(aVissim));
+
+      if fHwndCache.ContainsKey(key) then begin
+        result := fHwndCache[key];
+      end else begin
+        result := nil;
+        var pid: DWORD := GetVissimSeverPID(aVissim);
+        var success: Boolean;
+        (success, result) := FindMainWindow(pid);
+        if success then fHwndCache.Add(key, result);        
+      end;
+    end;
+
+    class method GetVissimSeverPID(aVissim: IUnknown): DWORD;
+    begin
+      result := 0;
+      CoGetServerPID(aVissim, var result);
+    end;
+
+    class method Initialize;
+    begin
+      fHwndCache := new Dictionary<NativeUInt, HWND>;
+    end;   
+  end;
 
 end.
 
