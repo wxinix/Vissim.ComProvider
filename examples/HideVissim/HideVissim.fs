@@ -40,54 +40,75 @@ let [<Literal>] ExampleFolder = @"C:\Users\Public\Documents\PTV Vision\PTV Vissi
 let [<Literal>] LayoutFile    = ExampleFolder + @"Basic Commands\COM Basic Commands.layx"
 let [<Literal>] NetworkFile   = ExampleFolder + @"Basic Commands\COM Basic Commands.inpx"
 
-type VissimLib.IVissim with
-    member this.HideMainWindow () =
-        printfn "Inside HideMainWindow"
-        let unk = Marshal.GetIUnknownForObject this
+type VissimProxy (x: VissimLib.IVissim) =
+    member _.HideMainWindow () =
+        let unk = Marshal.GetIUnknownForObject x
         HideVissim(unk)
         Marshal.Release(unk)
     
-    member this.RestoreMainWindow () =
-        let unk = Marshal.GetIUnknownForObject this
+    member _.RestoreMainWindow () =
+        let unk = Marshal.GetIUnknownForObject x
         ShowVissim(unk)
         Marshal.Release(unk)
+
+    member _.Simulation = x.Simulation   
 
 [<EntryPoint; STAThread>]
 let main argv =
     let vissim = VissimLib.VissimClass()
+    let vissimProxy = new VissimProxy (vissim)
     let simPeriod = vissim.Simulation.AttValue("SimPeriod") :?> int
     let stopWatch = new System.Diagnostics.Stopwatch ()
     
     vissim.LoadNet NetworkFile
     
-    let runVissimWithoutGUI =
-        printfn "Running Vissim  with hidden Main Window now..."        
-        vissim.HideMainWindow |> ignore 
+    let runVissimWithoutGUI () =
+        printfn "\nRunning Vissim with hidden Main Window now..."        
+        vissimProxy.HideMainWindow () |> ignore 
         stopWatch.Restart()
-        vissim.Simulation.RunContinuous()
+        vissimProxy.Simulation.RunContinuous()
         stopWatch.Stop()
         let time = stopWatch.ElapsedMilliseconds
-        vissim.RestoreMainWindow |> ignore
+        vissimProxy.RestoreMainWindow () |> ignore
         let realtimeFactor = (double simPeriod * 1000.0) / double time 
     
         (time, simPeriod, realtimeFactor) 
-        |||> printfn "With hidden Vissim, it taks %d ms to run %d sec simulation, achieved realtime factor %f" 
+        |||> printfn "Vissim Hidden Mode: takes [%d] ms to complete [%d] sec simulation, realtime factor [%5.3f]" 
     
-
-    let runVissimWithGUI =
-        printfn "Running Vissim with normal Main Window now..."
+    let runVissimTurboSpeed () =
+        printfn "\nRunning Vissim in Turbo Mode now..."
+        vissim.Graphics.AttValue("QuickMode") <- true
+        vissim.SuspendUpdateGUI()
+        vissimProxy.HideMainWindow () |> ignore 
         stopWatch.Restart()
-        vissim.Simulation.RunContinuous()
+        vissimProxy.Simulation.RunContinuous()
+        stopWatch.Stop()
+        let time = stopWatch.ElapsedMilliseconds
+        vissimProxy.RestoreMainWindow () |> ignore
+        vissim.Graphics.AttValue("QuickMode") <- false
+        vissim.ResumeUpdateGUI()
+        let realtimeFactor = (double simPeriod * 1000.0) / double time 
+    
+        (time, simPeriod, realtimeFactor) 
+        |||> printfn "Vissim Turbo Mode: takes [%d] ms to complete [%d] sec simulation, realtime factor [%5.3f]" 
+
+    let runVissimWithGUI () =
+        printfn "\nRunning Vissim with normal Main Window now..."
+        stopWatch.Restart()
+        vissimProxy.Simulation.RunContinuous()
         stopWatch.Stop()
         let time = stopWatch.ElapsedMilliseconds
 
         let realtimeFactor = (double simPeriod * 1000.0) / double time 
     
         (time, simPeriod, realtimeFactor) 
-        |||> printfn "With normal Vissim, it taks %d ms to run %d sec simulation, achieved realtime factor %f" 
+        |||> printfn "Vissim Visual Mode: takes [%d] ms to complete [%d] sec simulation, realtime factor %f" 
     
-    runVissimWithoutGUI
-    runVissimWithGUI
+    runVissimWithoutGUI()
+    runVissimTurboSpeed()
+    runVissimWithGUI()
+    
+    vissim.Exit()
     Console.ReadLine() |> ignore
     0
 
