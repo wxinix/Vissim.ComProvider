@@ -133,18 +133,18 @@ begin
   // the id of the parent process.
   GetWindowThreadProcessId(aHnd, @pid); // Discard the returned thread id.
 
-  if ((data^.Pid = pid) and IsMainWindow(aHnd)) then begin
-    result := false;
-    data.Hnd := aHnd;
+  if ((data^.Pid <> pid) or (not IsMainWindow(aHnd))) then begin
+    result := true;
   end else begin
-    result := true; // Keep enumerating.
+    data.Hnd := aHnd;
+    result := false; 
   end;
 end;
 
 method IsMainWindow(aHnd: HWND): Boolean;
 begin
   // This is good enough for searching Vissim main window
-  result := (GetWindow(aHnd, GW_OWNER) = nil) // and IsWindowVisible(aHnd);
+  result := (GetWindow(aHnd, GW_OWNER) = nil) and IsWindowVisible(aHnd);
 end;
 
 method FindMainWindow(aPid: DWORD): tuple of (Boolean, HWND);
