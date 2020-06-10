@@ -26,16 +26,16 @@ uses
 
 type
   {$HIDE H6} {$HIDE H7} {$HIDE H8}
-  // Used to verify the COM object's signature and to sniff the PID out of the header.
+  // A hack to sniff the PID out of the header. Only works for PID (<= 65535) of local server.
   ComObjRefHeader = packed record
-    Signature: DWORD; 	              // Signature "MEOW", Offset 0, Size 4
-    Flag: DWORD;                      // Flag indicating the kind of structure. Flag = 1: Standard
-    IID: array[0..15] of Byte;        // Interface Identifier
-    ReservedFlags: DWORD;             // Flags reserved for the system, but can be used to turn off pinging objects
-    RefCount: DWORD;                  // Reference count
-    OXID: array[0..7] of Byte;        // Object Exporter Identifier
-    OID: array[0..7] of Byte;         // Object Identifier
-    IPID: array[0..15] of Byte;       // Interface Pointer Identifier
+    Signature: DWORD; 	        // Signature "MEOW", Offset 0, Size 4
+    Flag: DWORD;                // Flag indicating the kind of structure. 1: Standard
+    IID: array[0..15] of Byte;  // Interface Identifier
+    ReservedFlags: DWORD;       // Flags reserved for the system
+    RefCount: DWORD;            // Reference count
+    OXID: array[0..7] of Byte;  // Object Exporter Identifier
+    OID: array[0..7] of Byte;   // Object Identifier
+    IPID: array[0..15] of Byte; // Interface Pointer Identifier
   end;
   {$SHOW H6} {$SHOW H7} {$SHOW H8}
 
@@ -64,26 +64,26 @@ begin
   result := aUnk.QueryInterface(@IID_IProxyManager, ^^Void(@proxyManager));
   if Failed(result) then exit;
 
-  // Marshall the interface to get a new OBJREF.  The CreateStreamOnHGlobalfunction creates a stream object
-  // that uses an HGLOBAL memory handle to store the stream contents. This object is the OLE-provided
-  // implementation of the IStream interface.
+  // Marshall the interface to get a new OBJREF. The CreateStreamOnHGlobalfunction creates a stream
+  // object that uses an HGLOBAL memory handle to store the stream contents. This object is the
+  // OLE-provided implementation of the IStream interface.
   var marshalStream: IStream;
   result := CreateStreamOnHGlobal(
-    nil,           // hGlobal memory handle if nil a new handle is to be allocated.
-    True,          // Whether the underlying handle for this stream object be automatically freed when stream object is released.
-    @marshalStream // Address of IStream* pointer variable to receive the interface pointer to the new stream object.
+    nil,           // HGLOBAL memory handle; nil to allocate a new one.
+    True,          // Whether automatically free the handle when releasing stream object.
+    @marshalStream // Address of IStream variable for the new stream object.
    );
   if Failed(Result) then exit;
 
-  // Writes the passed-in unk interface object into a stream the data required to initialize a proxy object
- //  in seperate client process.
+  // Writes the passed-in unk interface object into a stream with the data required to
+  // initialize a proxy object in seperate client process.
   result := CoMarshalInterface(
       marshalStream,
       @IID_IUnknown,
       aUnk,
-      DWORD(MSHCTX.MSHCTX_INPROC),      // The unmarshaling will be done in another apartment in the same process.
+      DWORD(MSHCTX.MSHCTX_INPROC),      // Unmarshaling to be done in another apartment in the same process.
       nil,                              // Destination context.
-      DWORD(MSHLFLAGS.MSHLFLAGS_NORMAL) // The marshaling is for an interface pointer being passed from one process to another.
+      DWORD(MSHLFLAGS.MSHLFLAGS_NORMAL) // Marshaling for intf pointer passed from one process to another.
       );
   if Failed(result) then exit;
 
@@ -98,7 +98,7 @@ begin
 
       if assigned(objRefHdr) then begin // Verify that the signature is MEOW
         if objRefHdr^.Signature = $574f454d then begin
-          aPid := objRefHdr^.IPID[4] + objRefHdr^.IPID[5] shl 8; // Make WORD for PID, which cann NOT exceed 65535.
+          aPid := objRefHdr^.IPID[4] + objRefHdr^.IPID[5] shl 8; // Make WORD for PIDw.
           result := S_OK;
         end;
       end;
@@ -107,16 +107,17 @@ begin
     end;
   end;
 
-  // Rewind stream and release marshaled data to keep refcount in order. The Seek method changes the seek
-  // pointer to a new location. The new location is relative to either the beginning of the stream (STREAM_SEEK_SET),
-  // the end of the stream (STREAM_SEEK_END), or the current seek pointer (STREAM_SEEK_CUR).
+  // Rewind stream and release marshaled data to keep refcount in order. The Seek method changes
+  // the seek pointer to a new location. The new location is relative to either the beginning of
+  // the stream (STREAM_SEEK_SET), the end of the stream (STREAM_SEEK_END), or the current seek 
+  // pointer (STREAM_SEEK_CUR).
   var libNewPosition: ULARGE_INTEGER;
-  var dlibMove: LARGE_INTEGER := new LARGE_INTEGER(QuadPart := 0);
+  var dlibMove: LARGE_INTEGER := new LARGE_INTEGER(QuadPart := 0); // or default(LARGE_INTEGER)
 
   marshalStream.Seek(
-    dlibMove,                           // Offset to the origin
-    DWORD(STREAM_SEEK.STREAM_SEEK_SET), // Beginning of the stream as the origin.
-    @libNewPosition                     // New position of the seek pointer from the beginning of the stream.
+    dlibMove,                           // Offset to ref point, which is specified by 2nd arg.
+    DWORD(STREAM_SEEK.STREAM_SEEK_SET), // Use stream begin as the origin.
+    @libNewPosition                     // New position of the seek pointer.
     );
 
   // Destroys a previously marshaled data packet.
@@ -128,8 +129,8 @@ begin
   var data := ^EnumWindowsData(aLParam);
   var pid: DWORD := 0;
 
-  // Retrieves the identifier of the thread that created the specified window and, optionally,
-  // the identifier of the process that created the window.
+  // Retrieves the id of the thread that created the specified window and, optionally,
+  // the id of the parent process.
   GetWindowThreadProcessId(aHnd, @pid); // Discard the returned thread id.
 
   if ((data^.Pid = pid) and IsMainWindow(aHnd)) then begin
