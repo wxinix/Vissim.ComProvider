@@ -39,7 +39,7 @@ namespace Vissim.ComProvider.Examples.VissimExtension
 
         [DllImport("Vissim.ComProvider.Utilities.dll", CallingConvention = CallingConvention.StdCall)]
         static extern void ShowVissim(IntPtr unk);
-        
+
         public static void HideMainWindow(this VissimLib200.IVissim vissim)
         {
             var unk = Marshal.GetIUnknownForObject(vissim);
@@ -60,7 +60,7 @@ namespace Vissim.ComProvider.Examples.VissimExtension
         static readonly string _exampleFolder = @"C:\Users\Public\Documents\PTV Vision\PTV Vissim 2020\Examples Training\COM\";
         static readonly string _layoutFile    = _exampleFolder + @"Basic Commands\COM Basic Commands.layx";
         static readonly string _networkFile   = _exampleFolder + @"Basic Commands\COM Basic Commands.inpx";
-        
+
         static void Main()
         {
             var vissim = new VissimLib200.VissimClass();
@@ -69,13 +69,13 @@ namespace Vissim.ComProvider.Examples.VissimExtension
 
             Console.WriteLine("Magic Happens Here! Vissim will disappear!");
             vissim.HideMainWindow();    // This will hide Vissim main window.
-            
+
             vissim.Simulation.AttValue["SimBreakAt"] = 60;
             vissim.Simulation.RunContinuous();
             vissim.RestoreMainWindow(); // This will restore Vissim main window.
-            
+
             Console.WriteLine("Magic Happens again! Vissim will show up!");
-            
+
             vissim.Exit();
             Console.ReadLine();
         }
