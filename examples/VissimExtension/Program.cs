@@ -40,14 +40,14 @@ namespace Vissim.ComProvider.Examples.VissimExtension
         [DllImport("Vissim.ComProvider.Utilities.dll", CallingConvention = CallingConvention.StdCall)]
         static extern void ShowVissim(IntPtr unk);
         
-        public static void HideMainnWindow(this VissimLib200.IVissim vissim)
+        public static void HideMainWindow(this VissimLib200.IVissim vissim)
         {
             var unk = Marshal.GetIUnknownForObject(vissim);
             HideVissim(unk);
             Marshal.Release(unk);
         }
 
-        public static void RestoreMainnWindow(this VissimLib200.IVissim vissim)
+        public static void RestoreMainWindow(this VissimLib200.IVissim vissim)
         {
             var unk = Marshal.GetIUnknownForObject(vissim);
             ShowVissim(unk);
@@ -68,11 +68,11 @@ namespace Vissim.ComProvider.Examples.VissimExtension
             vissim.LoadLayout(_layoutFile);
 
             Console.WriteLine("Magic Happens Here! Vissim will disappear!");
-            vissim.HideMainnWindow();    // This will hide Vissim main window.
+            vissim.HideMainWindow();    // This will hide Vissim main window.
             
             vissim.Simulation.AttValue["SimBreakAt"] = 60;
             vissim.Simulation.RunContinuous();
-            vissim.RestoreMainnWindow(); // This will restore Vissim main window.
+            vissim.RestoreMainWindow(); // This will restore Vissim main window.
             
             Console.WriteLine("Magic Happens again! Vissim will show up!");
             
