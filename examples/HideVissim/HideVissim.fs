@@ -40,23 +40,21 @@ let [<Literal>] ExampleFolder = @"C:\Users\Public\Documents\PTV Vision\PTV Vissi
 let [<Literal>] LayoutFile    = ExampleFolder + @"Basic Commands\COM Basic Commands.layx"
 let [<Literal>] NetworkFile   = ExampleFolder + @"Basic Commands\COM Basic Commands.inpx"
 
-type VissimProxy (x: VissimLib.IVissim) =
-    member _.HideMainWindow () =
-        let unk = Marshal.GetIUnknownForObject x
+// F# Intrisinc Type Extension to extend IVissim. In C#, you would need Extension Methods (see example "VissimExtension")
+type VissimLib.IVissim with
+    member this.HideMainWindow () =
+        let unk = Marshal.GetIUnknownForObject this
         HideVissim(unk)
         Marshal.Release(unk)
     
-    member _.RestoreMainWindow () =
-        let unk = Marshal.GetIUnknownForObject x
+    member this.RestoreMainWindow () =
+        let unk = Marshal.GetIUnknownForObject this
         ShowVissim(unk)
         Marshal.Release(unk)
-
-    member _.Simulation = x.Simulation   
 
 [<EntryPoint; STAThread>]
 let main argv =
     let vissim = VissimLib.VissimClass()
-    let vissimProxy = new VissimProxy (vissim)
     let simPeriod = vissim.Simulation.AttValue("SimPeriod") :?> int
     let stopWatch = new System.Diagnostics.Stopwatch ()
     
@@ -64,12 +62,12 @@ let main argv =
     
     let runVissimWithoutGUI () =
         printfn "\nRunning Vissim with hidden Main Window now..."        
-        vissimProxy.HideMainWindow () |> ignore 
+        vissim.HideMainWindow () |> ignore 
         stopWatch.Restart()
-        vissimProxy.Simulation.RunContinuous()
+        vissim.Simulation.RunContinuous()
         stopWatch.Stop()
         let time = stopWatch.ElapsedMilliseconds
-        vissimProxy.RestoreMainWindow () |> ignore
+        vissim.RestoreMainWindow () |> ignore
         let realtimeFactor = (double simPeriod * 1000.0) / double time 
     
         (time, simPeriod, realtimeFactor) 
@@ -79,12 +77,12 @@ let main argv =
         printfn "\nRunning Vissim in Turbo Mode now..."
         vissim.Graphics.AttValue("QuickMode") <- true
         vissim.SuspendUpdateGUI()
-        vissimProxy.HideMainWindow () |> ignore 
+        vissim.HideMainWindow () |> ignore 
         stopWatch.Restart()
-        vissimProxy.Simulation.RunContinuous()
+        vissim.Simulation.RunContinuous()
         stopWatch.Stop()
         let time = stopWatch.ElapsedMilliseconds
-        vissimProxy.RestoreMainWindow () |> ignore
+        vissim.RestoreMainWindow () |> ignore
         vissim.Graphics.AttValue("QuickMode") <- false
         vissim.ResumeUpdateGUI()
         let realtimeFactor = (double simPeriod * 1000.0) / double time 
@@ -95,7 +93,7 @@ let main argv =
     let runVissimWithGUI () =
         printfn "\nRunning Vissim with normal Main Window now..."
         stopWatch.Restart()
-        vissimProxy.Simulation.RunContinuous()
+        vissim.Simulation.RunContinuous()
         stopWatch.Stop()
         let time = stopWatch.ElapsedMilliseconds
 

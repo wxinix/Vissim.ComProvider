@@ -19,6 +19,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "HideVissim", "examples\Hide
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VissimLINQ", "examples\VissimLINQ\VissimLINQ.csproj", "{EECEF41C-EB3A-4259-AF0E-43045B0CFEC9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VissimExtension", "Examples\VissimExtension\VissimExtension.csproj", "{30F478F4-2F85-4BF4-9295-412B071A2BA0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +93,14 @@ Global
 		{EECEF41C-EB3A-4259-AF0E-43045B0CFEC9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EECEF41C-EB3A-4259-AF0E-43045B0CFEC9}.Release|x64.ActiveCfg = Release|Any CPU
 		{EECEF41C-EB3A-4259-AF0E-43045B0CFEC9}.Release|x64.Build.0 = Release|Any CPU
+		{30F478F4-2F85-4BF4-9295-412B071A2BA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30F478F4-2F85-4BF4-9295-412B071A2BA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30F478F4-2F85-4BF4-9295-412B071A2BA0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{30F478F4-2F85-4BF4-9295-412B071A2BA0}.Debug|x64.Build.0 = Debug|Any CPU
+		{30F478F4-2F85-4BF4-9295-412B071A2BA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30F478F4-2F85-4BF4-9295-412B071A2BA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30F478F4-2F85-4BF4-9295-412B071A2BA0}.Release|x64.ActiveCfg = Release|Any CPU
+		{30F478F4-2F85-4BF4-9295-412B071A2BA0}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
