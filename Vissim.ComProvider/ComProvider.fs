@@ -69,8 +69,11 @@ type ComProvider(cfg: TypeProviderConfig) as this =
         if cfg.IsHostedExecution && Environment.Is64BitProcess then "win64" else "win32"
     *)
 
-    /// Takes one of the three values, "win32", "win64", or "*" for both.
+    // Takes one of the three values, "win32", "win64", or "*" for both.
     let preferredPlatform = "*"
+
+    // Name space
+    let namespaceName = "Vissim.ComProvider"
 
     // We use nested types as opposed to namespaces for the following reasons:
     // 1. No way with ProvidedTypes API to have sub-namespaces generated on demand.
@@ -78,7 +81,7 @@ type ComProvider(cfg: TypeProviderConfig) as this =
     // type library name itself and of course the major.minor version number.
     let types =
         [ for name, libsByName in loadTypeLibs preferredPlatform "Vissim" |> Seq.groupBy (fun lib -> lib.Name) do
-            let nameTy = ProvidedTypeDefinition(asm, "COM", name, None) // COM is namespaceName.
+            let nameTy = ProvidedTypeDefinition(asm, namespaceName, name, None) // Vissim.ComProvider is namespaceName.
             yield nameTy
 
             for verStr, libsByVer in libsByName |> Seq.groupBy(fun lib -> lib.Version.VersionStr) do
@@ -88,14 +91,14 @@ type ComProvider(cfg: TypeProviderConfig) as this =
                     subTy.IsErased <- false
                     subTy.AddMembersDelayed <| fun _ ->
                         lib |> checkTypeLibPia
-                        let tempDir = Path.Combine(cfg.TemporaryFolder, "Vissim.ComProvider", Guid.NewGuid().ToString())
+                        let tempDir = Path.Combine(cfg.TemporaryFolder, namespaceName, Guid.NewGuid().ToString())
                         Directory.CreateDirectory(tempDir) |> ignore
                         let assemblies = importTypeLib lib.Path tempDir
                         // assemblies |> List.iter(fun asm -> ProvidedAssembly.RegisterGenerated(asm.Location) |> ignore)
                         assemblies |> List.collect(fun asm -> asm.GetTypes() |> Seq.toList) ]
 
     do
-        this.AddNamespace("Vissim.ComProvider", types)
+        this.AddNamespace(namespaceName, types)
         // this.RegisterProbingFolder(cfg.TemporaryFolder)
 
 [<TypeProviderAssembly>]
