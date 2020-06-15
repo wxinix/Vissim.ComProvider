@@ -24,13 +24,13 @@ using System.Runtime.InteropServices;
 using Vissim.ComProvider.TypeLibs;
 
 /// <summary>
-/// This example illustrates application of LINQ Query Expression on Vissim COM interface that inherits ICollectionBase.
+/// This example illustrates using LINQ Query Expression with Vissim COM interface that inherits ICollectionBase.
 /// </summary>
 namespace Vissim.ComProvider.Examples.VissimExtension
 {
     /// <summary>
     /// We define VissimExtension class to add two methods HideMainWindow and ShowMainWindow to IVissim interface.
-    /// These two methods become (i.e., extends) part of IVissim.
+    /// These two methods become (i.e., extend) part of IVissim.
     /// </summary>
     public static class VissimExtension
     {
