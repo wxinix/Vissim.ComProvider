@@ -36,22 +36,26 @@ namespace Vissim.ComProvider.Examples.VissimLINQ
         static readonly string _exampleFolder = @"C:\Users\Public\Documents\PTV Vision\PTV Vissim 2020\Examples Training\COM\";
         static readonly string _layoutFile    = _exampleFolder + @"Basic Commands\COM Basic Commands.layx";
         static readonly string _networkFile   = _exampleFolder + @"Basic Commands\COM Basic Commands.inpx";
-        
+
         static void Main()
         {
             var vissim = new VissimLib200.VissimClass();
             vissim.LoadNet(_networkFile);
             vissim.LoadLayout(_layoutFile);
 
-            // We can use the expressive and powerful LINQ Query Expression on any Vissim COM interface that inherits Vissim
-            // COM ICollectionBase interface, for example ILinkContainer. Actually, when Vissim COM types are imported from
-            // the type library, the imported ICollectionBase interface is automatically translated as inheriting the IEnumerable
-            // interface, because of the special flag [id(0xfffffffc)] specified to its _NewEnum method. This allows us to use
-            // foreach loop and LINQ Query Expression on any Vissim COM interface object that in turn implements ICollectionBase
-            // interface. Alternatively, we can also use IConnectionBase.FilteredBy method when appropriate, though FilteredBy is
-            // less expressive and powerful than the full-fledged LINQ Query Expression, of course.
-            var selectedLinks =   from  Link link in vissim.Net.Links 
-                                 where  (int)link.AttValue["No"] > 10 
+            // Use the expressive and powerful LINQ Query Expression on any  Vissim COM interface that  inherits
+            // ICollectionBase, for example ILinkContainer. Actually, when  Vissim  COM types are imported  from
+            // the type  library, Vissim  ICollectionBase interface is  automatically translated  as  inheriting
+            // IEnumerable, because of the special flag [id(0xfffffffc)] specified to its _NewEnum  method. This
+            // enables foreach loop and LINQ Query Expression on any Vissim COM interface object that implements
+            // ICollectionBase.
+
+            // Alternatively, IConnectionBase.FilteredB() method can also be used to query on conditions, though
+            // FilteredBy() is obviously less expressive, powerful, and elegant than the full-fledged LINQ Query
+            // Expression.
+
+            var selectedLinks =   from  Link link in vissim.Net.Links
+                                 where  (int)link.AttValue["No"] > 10
                                 select  link;
 
             foreach (Link link in selectedLinks) {
