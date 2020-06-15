@@ -21,9 +21,9 @@
 
 open System
 
-// Vissim COM Type Provider collects all installed Vissim COM type libraries and make them
-// part of the compiler type system. There is no need to explicitly import the type library
-// or add references.
+// The COM Type Provider collects all installed Vissim COM type libraries and make
+// them part of the compiler type system.There is no need to explicitly import the
+// type library or add references.
 
 // Alias to Vissim 2020 COM Type Lib
 type VissimLib =
