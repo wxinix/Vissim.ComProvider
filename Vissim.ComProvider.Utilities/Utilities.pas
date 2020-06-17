@@ -97,8 +97,8 @@ begin
       var objRefHdr: ^ComObjRefHeader := ^ComObjRefHeader(GlobalLock(hg));
 
       if assigned(objRefHdr) then begin // Verify that the signature is MEOW
-        if objRefHdr^.Signature = $574f454d then begin
-          aPid := objRefHdr^.IPID[4] + objRefHdr^.IPID[5] shl 8; // Make WORD for PIDw.
+        if objRefHdr^.Signature = $574F454D then begin
+          aPid := objRefHdr^.IPID[4] + objRefHdr^.IPID[5] shl 8; // Make WORD for PID.
           result := S_OK;
         end;
       end;
@@ -147,12 +147,12 @@ begin
   result := (GetWindow(aHnd, GW_OWNER) = nil) and IsWindowVisible(aHnd);
 end;
 
-method FindMainWindow(aPid: DWORD): tuple of (Boolean, HWND);
+method FindMainWindow(aPid: DWORD): HWND;
 begin
-  if aPid = 0 then exit (false, nil);
+  if aPid = 0 then exit nil;
   var data: EnumWindowsData := new EnumWindowsData (Pid := aPid, Hnd := nil);
   EnumWindows(@EnumWindowsCallback, LPARAM(@data));
-  result := (assigned(data.Hnd), data.Hnd);
+  result := data.Hnd;
 end;
 
 type
@@ -172,19 +172,17 @@ type
       var hnd := GetVissimMainWindowHandle(aVissim);
       if assigned(hnd) then ShowWindow(hnd, SW_HIDE); 
     end;
-    
+
     class method GetVissimMainWindowHandle(aVissim: IUnknown): HWND;
     begin
       var key := NativeUInt(^Void(aVissim));
 
       if fHwndCache.ContainsKey(key) then begin
         result := fHwndCache[key];
-      end else begin
-        result := nil;
+      end else begin   
         var pid: DWORD := GetVissimSeverPID(aVissim);
-        var success: Boolean;
-        (success, result) := FindMainWindow(pid);
-        if success then fHwndCache.Add(key, result);        
+        result := FindMainWindow(pid);
+        if assigned(result) then fHwndCache.Add(key, result);        
       end;
     end;
 
@@ -197,7 +195,7 @@ type
     class method Initialize;
     begin
       fHwndCache := new Dictionary<NativeUInt, HWND>;
-    end;   
+    end;
   end;
 
 end.
