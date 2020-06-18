@@ -40,7 +40,7 @@ let [<Literal>] ExampleFolder = @"C:\Users\Public\Documents\PTV Vision\PTV Vissi
 let [<Literal>] LayoutFile    = ExampleFolder + @"Basic Commands\COM Basic Commands.layx"
 let [<Literal>] NetworkFile   = ExampleFolder + @"Basic Commands\COM Basic Commands.inpx"
 
-// F# Intrisinc Type Extension to extend IVissim. In C#, you would need Extension Methods (see example "VissimExtension")
+// F# Type Extension to extend IVissim. In C#, you would need Extension Methods (see example "VissimExtension")
 type VissimLib.IVissim with
     member this.HideMainWindow () =
         let unk = Marshal.GetIUnknownForObject this
