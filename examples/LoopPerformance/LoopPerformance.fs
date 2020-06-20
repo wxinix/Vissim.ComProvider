@@ -54,7 +54,7 @@ let loadLayout (vissim: VissimLib.IVissim) =
 let loopTest (vissim: VissimLib.IVissim) =
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
 
-    let doGetAllLoop =
+    let arrayLoopTime =
         let allVehicles = vissim.Net.Vehicles.GetAll().AsArray<VissimLib.IVehicle>()
         stopWatch.Stop()
         let timeGetAllElements = stopWatch.ElapsedMilliseconds;
@@ -72,7 +72,7 @@ let loopTest (vissim: VissimLib.IVissim) =
         stopWatch.Stop()
         timeGetAllElements, stopWatch.ElapsedMilliseconds
 
-    let doEnumeratorLoop =
+    let enumLoopTime =
         stopWatch.Restart()
         for vehObj in vissim.Net.Vehicles do
             let veh = vehObj :?> VissimLib.IVehicle
@@ -86,7 +86,7 @@ let loopTest (vissim: VissimLib.IVissim) =
         stopWatch.Stop()
         stopWatch.ElapsedMilliseconds
 
-    let doIteratorLoop =
+    let iterLoopTime =
         printfn "----------------------------------------------------------"
         stopWatch.Restart()
         let iter = vissim.Net.Vehicles.Iterator
@@ -103,7 +103,7 @@ let loopTest (vissim: VissimLib.IVissim) =
         stopWatch.Stop()
         stopWatch.ElapsedMilliseconds
 
-    let doMultiAttValuesLoop =
+    let multiAttValuesLoopTime =
         printfn "----------------------------------------------------------"
         stopWatch.Restart()
         let vehNumbers   = vissim.Net.Vehicles.GetMultiAttValues(     "No") :?> Object [,]
@@ -121,7 +121,7 @@ let loopTest (vissim: VissimLib.IVissim) =
         stopWatch.Stop()
         stopWatch.ElapsedMilliseconds
 
-    let doMultipleAttributesLoop =
+    let multipleAttributesLoopTime =
         printfn "----------------------------------------------------------"
         stopWatch.Restart()
         let allVehAttrs = vissim.Net.Vehicles.GetMultipleAttributes(id<obj[]> [| "No";"VehType";"Speed";"Pos"; "Lane" |]) :?> Object[,]
@@ -135,35 +135,33 @@ let loopTest (vissim: VissimLib.IVissim) =
         stopWatch.Stop()
         stopWatch.ElapsedMilliseconds
 
-    let (timeGettingAllElements, timeDoingGetAllLoop) = doGetAllLoop
-    let timeDoingEnumLoop = doEnumeratorLoop
-    let timeDoingIterLoop = doIteratorLoop
-    let timeDoingMultiAttValuesLoop = doMultiAttValuesLoop
-    let timeDoingMultipleAttributesLoop = doMultipleAttributesLoop
+    let (timeGettingAllElements, timeDoingGetAllLoop) = arrayLoopTime
 
     printfn "----------------------------------------------------------"
     printfn "%10s \t%10s \t%10s \t%10s \t%18s \t%18s"
             "---"
-            "GetAllLoop"
+            "ArrayLoop"
             "EnumLoop"
             "IterLoop"
             "MultiAttValLoop"
             "MultipleAttrsLoop"
 
     printfn "%10s \t%10s \t%10s \t%10s \t%18s \t%18s" "Time(ms)"
-            ((timeGettingAllElements |> string) + "|" + ((timeGettingAllElements + timeDoingGetAllLoop) |> string))
-            (timeDoingEnumLoop                              |> string)
-            (timeDoingIterLoop                              |> string)
-            (timeDoingMultiAttValuesLoop                    |> string)
-            (timeDoingMultipleAttributesLoop                |> string)
+            ((fst(arrayLoopTime) |> string) + "|" + ((fst(arrayLoopTime) + snd(arrayLoopTime)) |> string))
+            (enumLoopTime                 |> string)
+            (iterLoopTime                 |> string)
+            (multiAttValuesLoopTime       |> string)
+            (multipleAttributesLoopTime   |> string)
+
+    let baseLineTime = multipleAttributesLoopTime
 
     printfn "%10s \t%10.3f \t%10.3f \t%10.3f \t%18.3f \t%18.3f"
             "Factor(x1)"
-            ((double timeGettingAllElements + double timeDoingGetAllLoop) / double timeDoingMultipleAttributesLoop)
-            (double timeDoingEnumLoop / double timeDoingMultipleAttributesLoop)
-            (double timeDoingIterLoop / double timeDoingMultipleAttributesLoop)
-            (double timeDoingMultiAttValuesLoop / double timeDoingMultipleAttributesLoop)
-            (double timeDoingMultipleAttributesLoop / double timeDoingMultipleAttributesLoop)
+            ((double timeGettingAllElements + double timeDoingGetAllLoop) / double baseLineTime)
+            (double enumLoopTime / double baseLineTime)
+            (double iterLoopTime / double baseLineTime)
+            (double multiAttValuesLoopTime / double baseLineTime)
+            (double multipleAttributesLoopTime / double baseLineTime)
 
     vissim
 
