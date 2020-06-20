@@ -19,7 +19,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+module Car2X
+
 open System
+open System.Collections.Generic
 
 // Vissim COM Type Provider collects all installed Vissim COM type libraries and make them
 // part of the compiler type system. There is no need to explicitly import the type library
@@ -29,9 +32,157 @@ open System
 type VissimLib =
     Vissim.ComProvider.``Vissim Object Library 20.0 64 Bit``.``14.0-win64``
 
+let [<Literal>] ExampleFolder = @"C:\Users\Public\Documents\PTV Vision\PTV Vissim 2020\Examples Training\COM\"
+let [<Literal>] LayoutFile    = ExampleFolder + @"Car2X.PY\Car2X.layx"
+let [<Literal>] NetworkFile   = ExampleFolder + @"Car2X.PY\Car2X.inpx"
+
+// The following illustrates how to extend ISimulation interface with customized events.
+type SimulationEventArgs =
+    { CurStep: int
+      TotalSteps: int
+      Vissim: VissimLib.IVissim }
+
+type SimulationEvents () =
+    let simAfterEnd    = new Event<_>()
+    let simAfterStart  = new Event<_>()
+    let simBeforeEnd   = new Event<_>()
+    let simBeforeStart = new Event<_>()
+    let simStepOnEnd   = new Event<_>()
+    let simStepOnStart = new Event<_>()
+
+    member _.SimStepOnStart = simStepOnStart
+    member _.SimStepOnEnd   = simStepOnEnd
+    member _.SimBeforeStart = simBeforeStart
+    member _.SimAfterStart  = simAfterStart
+    member _.SimBeforeEnd   = simBeforeEnd
+    member _.SimAfterEnd    = simAfterEnd
+
+// A store
+module SimulationEventStore =
+    let TheStore = Dictionary<int, SimulationEvents>()
+
+// Optional type extension for ISimulation interface
+type VissimLib.ISimulation with
+    // Run with events fired
+    member x.Run vissim =
+        let totalSteps = x.SimPeriod * x.SimRes
+        let simStepOnStart = x.Events.SimStepOnStart
+        let simStepOnEnd = x.Events.SimStepOnEnd
+        // Firing SimBeforeStart and SimAfterStart events
+        x.Events.SimBeforeStart.Trigger({CurStep = 0; TotalSteps = totalSteps; Vissim = vissim})        
+        x.RunSingleStep()        
+        x.Events.SimAfterStart.Trigger({CurStep = 1; TotalSteps = totalSteps; Vissim = vissim})
+        // Firing SimStepOnStart event
+        for step in 2..totalSteps - 1 do
+            simStepOnStart.Trigger({CurStep = step; TotalSteps = totalSteps; Vissim = vissim})            
+            x.RunSingleStep()            
+            simStepOnEnd.Trigger({CurStep = step; TotalSteps = totalSteps; Vissim = vissim})        
+        // Firing SimBeforeEnd and SimAfterEndEvent
+        x.Events.SimBeforeEnd.Trigger({CurStep = totalSteps - 1; TotalSteps = totalSteps; Vissim = vissim})        
+        x.RunSingleStep()        
+        x.Events.SimAfterEnd.Trigger({CurStep = totalSteps; TotalSteps = totalSteps; Vissim = vissim})        
+        x.Stop()
+
+    member x.SimPeriod 
+        with get() = x.AttValue("SimPeriod") :?> int
+        and set(value: int) = x.AttValue("SimPeriod") <- value
+
+    member x.SimBreakAt
+        with get() = x.AttValue("SimBreatAt") :?> int
+        and set(value: int) = x.AttValue("SimBreakAt") <- value
+
+    member x.SimRes
+        with get() = x.AttValue("SimRes") :?> int
+        and set(value: int) = x.AttValue("SimRes") <- value
+
+    member x.Events
+        with get(): SimulationEvents =
+            match x.GetHashCode() |> SimulationEventStore.TheStore.TryGetValue  with
+            | true, events -> events
+            | _ -> let events = new SimulationEvents()
+                   SimulationEventStore.TheStore.Add(x.GetHashCode(), events)
+                   events
+
+// Optional type extension for IScriptContainer interface
+type VissimLib.IScriptContainer with
+    member x.RemoveAll() =
+        for script in x do
+            x.RemoveScript(script :?> VissimLib.IScript)
+
+type VissimLib.IVehicle with
+    member x.Pos = x.AttValue("Pos") :?> float
+    member x.CoordFront = (x.AttValue("CoordFront") |> string).Split ' ' |> Array.map(fun el -> float el)
+
 [<EntryPoint; STAThread>]
 let main argv =
-
+    let vissim = VissimLib.VissimClass()
+    vissim.LoadNet NetworkFile
+    vissim.Net.Scripts.RemoveAll() // Remove all currently embedded scripts.
+    
+    vissim.Simulation.Events.SimStepOnStart.Publish |> Event.add(
+        fun arg ->
+            let c2xVehTyNoMsg = 101
+            let c2xVehTyHasActiveMsg = 102
+            let distDistr = 1
+            let speedIncident = 80            
+           
+            let vehIncident =             
+                let attrsAllVehsInNet = arg.Vissim.Net.Vehicles.GetMultipleAttributes(id<obj[]> [| "RoutDecType";"RoutDecNo";"VehType";"No" |]) :?> Object[][]          
+                let attrVehIncident = attrsAllVehsInNet |> Array.tryFind(
+                                         fun a -> 
+                                             let (routDecTy, routDecNo, vehTy) = (a.[0] |> string, a.[1] :?> int, a.[2] :?> int)
+                                             (routDecTy = "PARKING") && (routDecNo = 1) && ((vehTy = c2xVehTyNoMsg) || (vehTy = c2xVehTyHasActiveMsg)) ) 
+                
+                match attrVehIncident with
+                | None -> None
+                | Some x ->                 
+                       let theVeh = arg.Vissim.Net.Vehicles.ItemByKey(x.[3]) // x.[3] is VehNo
+                       theVeh.AttValue("C2X_HasCurrentMessage") <- 1
+                       theVeh.AttValue("C2X_MessageOrigin")     <- theVeh.AttValue("Pos")
+                       theVeh.AttValue("C2X_SendingMessage")    <- 1
+                       Some theVeh 
+                       
+            let attrIDs: obj[] = [| "Pos";"VehType";"C2X_HasCurrentMessage";"C2X_MessageOrigin";"C2X_Message";"DesSpeed";"C2X_DesSpeedOld" |]            
+            // Update C2X vehicles state in range with the incident vehicle
+            match vehIncident with
+            | None -> ()
+            | Some x -> 
+                  let vehsRecvMsg = arg.Vissim.Net.Vehicles.GetByLocation(x.CoordFront.[0], x.CoordFront.[1], distDistr)  
+                  let attrsVehsRecvMsg = vehsRecvMsg.GetMultipleAttributes(attrIDs) :?> Object[][]                         
+                  
+                  attrsVehsRecvMsg |> Array.iter(fun a -> 
+                      let p = a.[0] :?> float, a.[1] :?> int, a.[5] :?> float // (pos, vehTy, desSpeed)
+                      match p with
+                      | (pos, vehTy, desSpeed) when (List.contains vehTy [c2xVehTyHasActiveMsg; c2xVehTyNoMsg]) && (pos < x.Pos) ->
+                            a.[1] <- id<obj> c2xVehTyHasActiveMsg
+                            a.[2] <- id<obj> 1
+                            a.[3] <- id<obj> x.Pos
+                            a.[4] <- id<obj> "Break down vehicle ahead!"
+                            a.[5] <- id<obj> speedIncident
+                            a.[6] <- id<obj> desSpeed 
+                      | _ -> ())
+                  
+                  vehsRecvMsg.SetMultipleAttributes(attrIDs.[1..], attrsVehsRecvMsg) // Send new attribute back to Vissim
+                             
+            let attrsAllVehsInNet = arg.Vissim.Net.Vehicles.GetMultipleAttributes(attrIDs) :?> Object[][]
+            attrsAllVehsInNet |> Array.iter(fun a ->
+                let p = a.[0] :?> float, 
+                        (if isNull(a.[2]) then None else Some(a.[2] :?>   int)), 
+                        (if isNull(a.[3]) then None else Some(a.[3] :?> float)), 
+                        (if isNull(a.[6]) then None else Some(a.[6] :?> float)) // (pos, hasActiveMsg, posC2x, desSpeedOld)
+                match p with
+                | (pos, Some(hasActiveMsg), Some(posC2x), Some(desSpeedOld)) when hasActiveMsg = 1 && pos > posC2x -> 
+                      a.[1] <- id<obj> c2xVehTyNoMsg
+                      a.[2] <- id<obj> 0
+                      a.[3] <- id<obj> ""
+                      a.[4] <- id<obj> ""
+                      a.[5] <- id<obj> desSpeedOld
+                      a.[6] <- id<obj> ""            
+                | _ -> ())
+            arg.Vissim.Net.Vehicles.SetMultipleAttributes(attrIDs.[1..], attrsAllVehsInNet)            
+        ) 
+    
+    vissim.Simulation.Run vissim
     Console.ReadLine() |> ignore
     0
 

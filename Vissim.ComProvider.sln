@@ -6,7 +6,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Vissim.ComProvider", "Vissi
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Vissim.ComProvider.TypeLibs", "Vissim.ComProvider.TypeLibs\Vissim.ComProvider.TypeLibs.fsproj", "{BE294C6B-774A-44E9-80DA-0801E3F13D9F}"
 EndProject
-Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "Vissim.ComProvider.Utilities", "Vissim.ComProvider.Utilities\Vissim.ComProvider.Utilities.elements", "{14FEEBF2-300A-4EA2-9055-1042D82A4F97}"
+Project("{656346D9-4656-40DA-A068-22D5425D4639}") = "Vissim.ComProvider.Utilities", "Vissim.ComProvider.Utilities\Vissim.ComProvider.Utilities.elements", "{99770270-7C50-43F1-BDA9-0A34AF77DC2B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,11 +22,12 @@ Global
 		{BE294C6B-774A-44E9-80DA-0801E3F13D9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE294C6B-774A-44E9-80DA-0801E3F13D9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE294C6B-774A-44E9-80DA-0801E3F13D9F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{14FEEBF2-300A-4EA2-9055-1042D82A4F97}.Debug|Any CPU.ActiveCfg = Debug
-		{14FEEBF2-300A-4EA2-9055-1042D82A4F97}.Debug|Any CPU.Build.0 = Debug
-		{14FEEBF2-300A-4EA2-9055-1042D82A4F97}.Debug|Any CPU.Deploy.0 = Debug
-		{14FEEBF2-300A-4EA2-9055-1042D82A4F97}.Release|Any CPU.ActiveCfg = Release
-		{14FEEBF2-300A-4EA2-9055-1042D82A4F97}.Release|Any CPU.Build.0 = Release
+		{99770270-7C50-43F1-BDA9-0A34AF77DC2B}.Debug|Any CPU.ActiveCfg = Debug
+		{99770270-7C50-43F1-BDA9-0A34AF77DC2B}.Debug|Any CPU.Build.0 = Debug
+		{99770270-7C50-43F1-BDA9-0A34AF77DC2B}.Debug|Any CPU.Deploy.0 = Debug
+		{99770270-7C50-43F1-BDA9-0A34AF77DC2B}.Release|Any CPU.ActiveCfg = Release
+		{99770270-7C50-43F1-BDA9-0A34AF77DC2B}.Release|Any CPU.Build.0 = Release
+		{99770270-7C50-43F1-BDA9-0A34AF77DC2B}.Release|Any CPU.Deploy.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
