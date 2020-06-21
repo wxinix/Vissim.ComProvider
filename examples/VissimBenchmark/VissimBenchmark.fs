@@ -20,6 +20,8 @@
 // SOFTWARE.
 
 open System
+open System.IO
+open System.Reflection
 open System.Runtime.InteropServices
 
 // Vissim COM Type Provider collects all installed Vissim COM type libraries and make them
@@ -36,10 +38,6 @@ extern void HideVissim(nativeint unk);
 [<DllImport("Vissim.ComProvider.Utilities.dll", CallingConvention = CallingConvention.StdCall)>]
 extern void ShowVissim(nativeint unk);
 
-let [<Literal>] ExampleFolder = @"C:\Users\Public\Documents\PTV Vision\PTV Vissim 2020\Examples Training\COM\"
-let [<Literal>] LayoutFile    = ExampleFolder + @"Basic Commands\COM Basic Commands.layx"
-let [<Literal>] NetworkFile   = ExampleFolder + @"Basic Commands\COM Basic Commands.inpx"
-
 // F# Type Extension to extend IVissim. In C#, you would need Extension Methods (see example "VissimExtension")
 type VissimLib.IVissim with
     member this.HideMainWindow () =
@@ -55,11 +53,13 @@ type VissimLib.IVissim with
 [<EntryPoint; STAThread>]
 let main argv =
     let vissim = VissimLib.VissimClass()
+    let network =
+        let exePath = Uri(Assembly.GetEntryAssembly().GetName().CodeBase).LocalPath
+        FileInfo(exePath).Directory.FullName + "\\VissimBenchmark.inpx"        
+    vissim.LoadNet network
     let simPeriod = vissim.Simulation.AttValue("SimPeriod") :?> int
     let stopWatch = new System.Diagnostics.Stopwatch ()
-
-    vissim.LoadNet NetworkFile
-
+    
     let runVissimWithoutGUI () =
         printfn "\nRunning Vissim with hidden Main Window now..."
         vissim.HideMainWindow () |> ignore

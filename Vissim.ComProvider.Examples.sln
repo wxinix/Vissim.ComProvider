@@ -15,11 +15,11 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MatrixOperations", "example
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "NetworkObjectsAdding", "examples\NetworkObjectsAdding\NetworkObjectsAdding.fsproj", "{8E8C9AD9-2309-4C4E-9958-CD72DCF7ED88}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "HideVissim", "examples\HideVissim\HideVissim.fsproj", "{B5D0A0B0-8CCD-48F9-8ADA-ADD750EE4554}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VissimLINQ", "examples\VissimLINQ\VissimLINQ.csproj", "{EECEF41C-EB3A-4259-AF0E-43045B0CFEC9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VissimExtension", "Examples\VissimExtension\VissimExtension.csproj", "{30F478F4-2F85-4BF4-9295-412B071A2BA0}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "VissimBenchmark", "Examples\VissimBenchmark\VissimBenchmark.fsproj", "{B5D0A0B0-8CCD-48F9-8ADA-ADD750EE4554}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,14 +77,6 @@ Global
 		{8E8C9AD9-2309-4C4E-9958-CD72DCF7ED88}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8E8C9AD9-2309-4C4E-9958-CD72DCF7ED88}.Release|x64.ActiveCfg = Release|x64
 		{8E8C9AD9-2309-4C4E-9958-CD72DCF7ED88}.Release|x64.Build.0 = Release|x64
-		{B5D0A0B0-8CCD-48F9-8ADA-ADD750EE4554}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B5D0A0B0-8CCD-48F9-8ADA-ADD750EE4554}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B5D0A0B0-8CCD-48F9-8ADA-ADD750EE4554}.Debug|x64.ActiveCfg = Debug|x64
-		{B5D0A0B0-8CCD-48F9-8ADA-ADD750EE4554}.Debug|x64.Build.0 = Debug|x64
-		{B5D0A0B0-8CCD-48F9-8ADA-ADD750EE4554}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B5D0A0B0-8CCD-48F9-8ADA-ADD750EE4554}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B5D0A0B0-8CCD-48F9-8ADA-ADD750EE4554}.Release|x64.ActiveCfg = Release|x64
-		{B5D0A0B0-8CCD-48F9-8ADA-ADD750EE4554}.Release|x64.Build.0 = Release|x64
 		{EECEF41C-EB3A-4259-AF0E-43045B0CFEC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EECEF41C-EB3A-4259-AF0E-43045B0CFEC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EECEF41C-EB3A-4259-AF0E-43045B0CFEC9}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -101,6 +93,14 @@ Global
 		{30F478F4-2F85-4BF4-9295-412B071A2BA0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{30F478F4-2F85-4BF4-9295-412B071A2BA0}.Release|x64.ActiveCfg = Release|Any CPU
 		{30F478F4-2F85-4BF4-9295-412B071A2BA0}.Release|x64.Build.0 = Release|Any CPU
+		{B5D0A0B0-8CCD-48F9-8ADA-ADD750EE4554}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5D0A0B0-8CCD-48F9-8ADA-ADD750EE4554}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5D0A0B0-8CCD-48F9-8ADA-ADD750EE4554}.Debug|x64.ActiveCfg = Debug|x64
+		{B5D0A0B0-8CCD-48F9-8ADA-ADD750EE4554}.Debug|x64.Build.0 = Debug|x64
+		{B5D0A0B0-8CCD-48F9-8ADA-ADD750EE4554}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5D0A0B0-8CCD-48F9-8ADA-ADD750EE4554}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5D0A0B0-8CCD-48F9-8ADA-ADD750EE4554}.Release|x64.ActiveCfg = Release|x64
+		{B5D0A0B0-8CCD-48F9-8ADA-ADD750EE4554}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
