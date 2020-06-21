@@ -103,7 +103,7 @@ let main argv =
         let realtimeFactor = (double simPeriod * 1000.0) / double time
 
         (time, simPeriod, realtimeFactor)
-        |||> printfn "Vissim Visual Mode: takes [%d] ms to complete [%d] sec simulation, realtime factor %f"
+        |||> printfn "Vissim Visual Mode: takes [%d] ms to complete [%d] sec simulation, realtime factor [%5.3f]"
         "NormalGui", double time/1000.0, simPeriod, realtimeFactor
 
     vissim.Exit()
