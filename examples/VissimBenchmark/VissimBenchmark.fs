@@ -55,12 +55,13 @@ let main argv =
     let vissim = VissimLib.VissimClass()
     let network =
         let exePath = Uri(Assembly.GetEntryAssembly().GetName().CodeBase).LocalPath
-        FileInfo(exePath).Directory.FullName + "\\VissimBenchmark.inpx"        
+        FileInfo(exePath).Directory.FullName + "\\VissimBenchmark.inpx"
     vissim.LoadNet network
+    printfn "Starting benchmarking Vissim on %s" Environment.MachineName
     let simPeriod = vissim.Simulation.AttValue("SimPeriod") :?> int
     let stopWatch = new System.Diagnostics.Stopwatch ()
-    
-    let runVissimWithoutGUI () =
+
+    let timeRunVissimHiddenGui =
         printfn "\nRunning Vissim with hidden Main Window now..."
         vissim.HideMainWindow () |> ignore
         stopWatch.Restart()
@@ -72,8 +73,9 @@ let main argv =
 
         (time, simPeriod, realtimeFactor)
         |||> printfn "Vissim Hidden Mode: takes [%d] ms to complete [%d] sec simulation, realtime factor [%5.3f]"
+        "HiddenGui", double time/1000.0, simPeriod, realtimeFactor
 
-    let runVissimTurboSpeed () =
+    let timeRunVissimTurbo =
         printfn "\nRunning Vissim in Turbo Mode now..."
         vissim.Graphics.AttValue("QuickMode") <- true
         vissim.SuspendUpdateGUI()
@@ -89,8 +91,9 @@ let main argv =
 
         (time, simPeriod, realtimeFactor)
         |||> printfn "Vissim Turbo Mode: takes [%d] ms to complete [%d] sec simulation, realtime factor [%5.3f]"
+        "Turbo", double time/1000.0, simPeriod, realtimeFactor
 
-    let runVissimWithGUI () =
+    let timeRunVissimNormalGui =
         printfn "\nRunning Vissim with normal Main Window now..."
         stopWatch.Restart()
         vissim.Simulation.RunContinuous()
@@ -101,12 +104,19 @@ let main argv =
 
         (time, simPeriod, realtimeFactor)
         |||> printfn "Vissim Visual Mode: takes [%d] ms to complete [%d] sec simulation, realtime factor %f"
-
-    runVissimWithoutGUI()
-    runVissimTurboSpeed()
-    runVissimWithGUI()
+        "NormalGui", double time/1000.0, simPeriod, realtimeFactor
 
     vissim.Exit()
+
+    printfn "\n----------------------------------------------------------------------------------------"
+    printfn "%-10s\t%-15s\t%-15s\t%-20s" "Mode" "TimeTaken(s)" "SimPeriod(s)" "RealtimeFactor(x1)"
+    [timeRunVissimHiddenGui; timeRunVissimTurbo; timeRunVissimNormalGui] |> List.iter(
+        fun el ->
+            let (mode, time, simPeriod, rtFactor) = el
+            printfn "%-10s\t%-15.2f\t%-15d\t%-4.1f" mode time simPeriod rtFactor)
+    printfn "----------------------------------------------------------------------------------------\n"
+
+    Console.WriteLine("Benchmarking done. Press any key to exit.") |> ignore
     Console.ReadLine() |> ignore
     0
 
