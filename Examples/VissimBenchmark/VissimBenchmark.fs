@@ -53,10 +53,13 @@ type VissimLib.IVissim with
 [<EntryPoint; STAThread>]
 let main argv =
     let vissim = VissimLib.VissimClass()
+
     let network =
         let exePath = Uri(Assembly.GetEntryAssembly().GetName().CodeBase).LocalPath
         FileInfo(exePath).Directory.FullName + "\\VissimBenchmark.inpx"
+
     vissim.LoadNet network
+
     printfn "Starting benchmarking Vissim on %s" Environment.MachineName
     let simPeriod = vissim.Simulation.AttValue("SimPeriod") :?> int
     let stopWatch = new System.Diagnostics.Stopwatch ()
