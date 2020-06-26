@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VissimLINQ", "examples\Viss
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VissimExtension", "Examples\VissimExtension\VissimExtension.csproj", "{30F478F4-2F85-4BF4-9295-412B071A2BA0}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "VissimBenchmark", "Examples\VissimBenchmark\VissimBenchmark.fsproj", "{B5D0A0B0-8CCD-48F9-8ADA-ADD750EE4554}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "VissimBenchmarks", "Examples\VissimBenchmark\VissimBenchmarks.fsproj", "{B5D0A0B0-8CCD-48F9-8ADA-ADD750EE4554}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
