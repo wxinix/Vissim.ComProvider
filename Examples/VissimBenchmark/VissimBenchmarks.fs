@@ -56,7 +56,10 @@ type VissimTypes.ISimulation with
         x.Stop()
         vissim.RestoreMainWindow() |> ignore
 
-    member x.Run() =
+    member x.Run(vissim: VissimTypes.IVissim) =
+        vissim.RestoreMainWindow() |> ignore
+        vissim.ResumeUpdateGUI()
+        vissim.Graphics.AttValue("QuickMode") <- false
         x.RunContinuous()
         x.Stop()
 
@@ -66,12 +69,10 @@ type VissimTypes.ISimulation with
         vissim.HideMainWindow() |> ignore
         x.RunContinuous()
         x.Stop()
-        vissim.RestoreMainWindow() |> ignore
-        vissim.ResumeUpdateGUI()
-        vissim.Graphics.AttValue("QuickMode") <- false
 
     member x.SimPeriod
         with get() = x.AttValue("SimPeriod") :?> int
+        and set(value) = x.AttValue("SimPeriod") <- value
 
 module RealtimeFactorBenchmark =
     let private benchmark =
@@ -80,39 +81,49 @@ module RealtimeFactorBenchmark =
             let exePath = Uri(Assembly.GetEntryAssembly().GetName().CodeBase).LocalPath
             FileInfo(exePath).Directory.FullName + "\\VissimBenchmarks.inpx"
         vissim.LoadNet network
-        let simPeriod = vissim.Simulation.SimPeriod
-        let stopWatch = new System.Diagnostics.Stopwatch()        
-            
-        fun mode load exitOnDone ->
+        
+        let simPeriod =
+            vissim.Simulation.SimPeriod <- 360
+            vissim.Simulation.SimPeriod
+
+        let stopWatch = new System.Diagnostics.Stopwatch()
+    
+        fun mode onExecute onDone ->
             printfn "\n - Running [%s] mode now..." mode
             stopWatch.Restart()
-            load(vissim)
+            onExecute(vissim)
             stopWatch.Stop()
             let time = double stopWatch.ElapsedMilliseconds / 1000.0
             let realtimeFactor = double simPeriod / time
-            printfn " - Takes %6.2f seconds" time                
-            if exitOnDone then vissim.Exit()
+            printfn " - Takes %6.2f seconds" time        
+            onDone(vissim)
             (mode, time, simPeriod, realtimeFactor)
+
+    let private print result =
+        printfn "\n----------------------------------------------------------------------------------------"
+        printfn " %-10s\t%-15s\t%-15s\t%-20s" "Mode" "TimeTaken(s)" "SimPeriod(s)" "RealtimeFactor(x1)"
+        result |> List.iter(fun el -> let (mode, time, simPeriod, rtFactor) = el
+                                      printfn " %-10s\t%-15.2f\t%-15d\t%-4.1f" mode time simPeriod rtFactor)
+        printfn "----------------------------------------------------------------------------------------\n"
 
     let run() =
         printfn "Starting benchmarking Vissim realtime factor on %s" Environment.MachineName
-        let timeHidden = benchmark "Hidden" (fun vissim -> vissim.Simulation.RunHidden(vissim)) false
-        let timeTurboo = benchmark "Turboo" (fun vissim -> vissim.Simulation.RunTurbo(vissim))  false
-        let timeNormal = benchmark "Normal" (fun vissim -> vissim.Simulation.Run())             true
+        SystemInfo.printSystemInfo()
 
-        printfn "\n----------------------------------------------------------------------------------------"
-        printfn "%-10s\t%-15s\t%-15s\t%-20s" "Mode" "TimeTaken(s)" "SimPeriod(s)" "RealtimeFactor(x1)"
+        let timeHidden = benchmark "Hidden"
+                                   (fun vsm -> vsm.Simulation.RunHidden vsm)
+                                   (fun _ -> ())                            
+        let timeTurboo = benchmark "Turboo"
+                                   (fun vsm -> vsm.Simulation.RunTurbo vsm)
+                                   (fun _ -> ())
+        let timeNormal = benchmark "Normal"
+                                   (fun vsm -> vsm.Simulation.Run vsm)
+                                   (fun vsm -> vsm.Exit())
 
-        [timeHidden; timeTurboo; timeNormal] |> List.iter(
-            fun el ->
-                let (mode, time, simPeriod, rtFactor) = el
-                printfn "%-10s\t%-15.2f\t%-15d\t%-4.1f" mode time simPeriod rtFactor)
-
-        printfn "----------------------------------------------------------------------------------------\n"
-
+        print [timeHidden; timeTurboo; timeNormal]
         Console.WriteLine("Benchmarking done. Press any key to exit.") |> ignore
         Console.ReadLine() |> ignore
-        
+
 module Main =
     [<EntryPoint; STAThread>]
     let main argv =

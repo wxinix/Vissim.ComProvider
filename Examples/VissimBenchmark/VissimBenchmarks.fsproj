@@ -80,6 +80,7 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
+    <Compile Include="SystemInfo.fs" />
     <Compile Include="VissimBenchmarks.fs" />
     <None Include="VissimBenchmarks.inpx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -89,6 +90,7 @@
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Numerics" />
     <Reference Include="Vissim.ComProvider">
       <HintPath>..\..\output\Vissim.ComProvider.dll</HintPath>
