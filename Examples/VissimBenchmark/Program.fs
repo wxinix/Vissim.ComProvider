@@ -7,6 +7,6 @@ open Benchmarks
 let main argv =
     use rtFactorBenchmark = new RealtimeFactorBenchmark(360u)
     rtFactorBenchmark.run()
-    Console.WriteLine("Press any key to exit.") |> ignore
+    Console.WriteLine("\nPress any key to exit.") |> ignore
     Console.ReadLine() |> ignore
     0

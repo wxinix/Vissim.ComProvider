@@ -89,7 +89,7 @@ type RealtimeFactorBenchmark (simPeriod: uint) =
         vissim.Simulation.SimPeriod
 
     let benchmark =
-        let stopWatch =  new System.Diagnostics.Stopwatch()
+        let stopWatch = new System.Diagnostics.Stopwatch()
 
         fun mode onExecute ->
             printfn "\n - Running [%s] mode now..." mode
