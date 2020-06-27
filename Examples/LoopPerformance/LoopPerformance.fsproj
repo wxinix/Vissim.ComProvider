@@ -82,7 +82,7 @@
   <ItemGroup>
     <Compile Include="LoopTest.fs" />
     <Compile Include="Program.fs" />
-    <None Include="..\..\Examples\LoopPerformance\LoopPerformance.inpx">
+    <None Include="LoopPerformance.inpx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
