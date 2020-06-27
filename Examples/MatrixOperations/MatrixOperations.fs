@@ -19,7 +19,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-open System
+namespace Vissim.MatrixOperations
 
 // Vissim COM Type Provider collects all installed Vissim COM type libraries and make them
 // part of the compiler type system. There is no need to explicitly import the type library
@@ -29,9 +29,4 @@ open System
 type VissimLib =
      Vissim.ComProvider.``Vissim Object Library 20.0 64 Bit``.``14.0-win64``
 
-[<EntryPoint; STAThread>]
-let main argv =
-
-    Console.ReadLine() |> ignore
-    0
 
