@@ -82,6 +82,9 @@
   <ItemGroup>
     <Compile Include="LoopTest.fs" />
     <Compile Include="Program.fs" />
+    <None Include="..\..\Examples\LoopPerformance\LoopPerformance.inpx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

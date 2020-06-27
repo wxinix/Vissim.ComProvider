@@ -22,6 +22,8 @@
 module Vissim.LoopPerformance.LoopTest
 
 open System
+open System.IO
+open System.Reflection
 
 // The COM Type Provider collects all installed Vissim COM type libraries and make
 // them part of the compiler type system.There is no need to explicitly import the
@@ -33,25 +35,6 @@ type VissimLib =
 
 type Object with
     member this.AsArray<'T> () = this :?> Object [] |> Array.map(fun o -> o :?> 'T)
-
-let [<Literal>] ExampleFolder =
-    @"C:\Users\Public\Documents\PTV Vision\PTV Vissim 2020\Examples Training\COM\"
-
-let [<Literal>] NetworkFile =
-    ExampleFolder + @"Basic Commands\COM Basic Commands.inpx"
-
-let [<Literal>] LayoutFile =
-    ExampleFolder  + @"Basic Commands\COM Basic Commands.layx"
-
-let loadNetwork (vissim: VissimLib.IVissim) =
-    vissim.LoadNet NetworkFile
-    NetworkFile |> printfn "Network \"%s\" loaded."
-    vissim
-
-let loadLayout (vissim: VissimLib.IVissim) =
-    vissim.LoadLayout LayoutFile
-    LayoutFile |> printfn "Layout \"%s\" loaded."
-    vissim
 
 let printvi vehInfo =
     let no, ty, spd, pos, lane = vehInfo
@@ -97,9 +80,12 @@ let multiAttrsLoop(vissim: VissimLib.IVissim) =
 type LoopTest (simPeriod: uint) =
     let vissim =
         let vissim = VissimLib.VissimClass()
-        vissim |> loadNetwork |> loadLayout |> ignore
+        let network =
+            let exePath = Uri(Assembly.GetEntryAssembly().GetName().CodeBase).LocalPath
+            FileInfo(exePath).Directory.FullName + "\\LoopPerformance.inpx"
+        vissim.LoadNet network
         vissim.Graphics.AttValue("QuickMode")    <- true
-        vissim.Simulation.AttValue("SimBreakAt") <- max simPeriod 60u
+        vissim.Simulation.AttValue("SimBreakAt") <- max simPeriod 1u
         vissim.SuspendUpdateGUI()
         vissim.Simulation.RunContinuous()
         vissim
@@ -124,8 +110,10 @@ type LoopTest (simPeriod: uint) =
         printfn " Loop Performance Benchmarking Summary"
         printfn "----------------------------------------------------------"
 
-        results |> List.iter(fun result -> 
+        results |> List.iter(fun result ->
             printfn "%-18s\t%10.3f sec (%5.2f)" (fst result) (snd result) ((snd result)/(snd baseline)) )
 
     interface IDisposable with
-        member _.Dispose() = vissim.Exit()
+        member _.Dispose() =
+            vissim.Simulation.Stop()
+            vissim.Exit()
