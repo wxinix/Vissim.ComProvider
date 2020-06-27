@@ -113,9 +113,9 @@ type RealtimeFactorBenchmark (simPeriod: uint) =
         printfn "Starting benchmarking Vissim realtime factor on %s" Environment.MachineName
         printsi() // Print system information.
 
-        let timeHidden = benchmark "Hidden" (fun vsm -> vsm.Simulation.RunHidden vsm)                                         
-        let timeTurboo = benchmark "Turboo" (fun vsm -> vsm.Simulation.RunTurboo vsm)            
-        let timeNormal = benchmark "Normal" (fun vsm -> vsm.Simulation.RunNormal vsm)                   
+        let timeHidden = benchmark "Hidden" (fun vsm -> vsm.Simulation.RunHidden vsm)
+        let timeTurboo = benchmark "Turboo" (fun vsm -> vsm.Simulation.RunTurboo vsm)
+        let timeNormal = benchmark "Normal" (fun vsm -> vsm.Simulation.RunNormal vsm)
 
         print [timeHidden; timeTurboo; timeNormal]
 
