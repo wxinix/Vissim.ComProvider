@@ -19,12 +19,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-module Vissim.Benchmarks.Jobs
+module Vissim.Benchmarks.Benchmarks
 
 open System
 open System.IO
 open System.Reflection
 open System.Runtime.InteropServices
+open SystemInfo
 
 // Alias to Vissim 2020 COM Type Lib
 type VissimLib =
@@ -56,14 +57,14 @@ type VissimLib.ISimulation with
         x.Stop()
         vissim.RestoreMainWindow() |> ignore
 
-    member x.Run(vissim: VissimLib.IVissim) =
+    member x.RunNormal(vissim: VissimLib.IVissim) =
         vissim.RestoreMainWindow() |> ignore
         vissim.ResumeUpdateGUI()
         vissim.Graphics.AttValue("QuickMode") <- false
         x.RunContinuous()
         x.Stop()
 
-    member x.RunTurbo(vissim: VissimLib.IVissim) =
+    member x.RunTurboo(vissim: VissimLib.IVissim) =
         vissim.SuspendUpdateGUI()
         vissim.Graphics.AttValue("QuickMode") <- true
         vissim.HideMainWindow() |> ignore
@@ -74,53 +75,49 @@ type VissimLib.ISimulation with
         with get() = x.AttValue("SimPeriod") :?> int
         and set(value) = x.AttValue("SimPeriod") <- value
 
-module RealtimeFactorBenchmark =
-    let private benchmark =
-        let vissim = VissimLib.VissimClass()       
+type RealtimeFactorBenchmark (simPeriod: uint) =
+    let vissim =
+        let vissim = VissimLib.VissimClass()
         let network =
             let exePath = Uri(Assembly.GetEntryAssembly().GetName().CodeBase).LocalPath
             FileInfo(exePath).Directory.FullName + "\\VissimBenchmarks.inpx"
         vissim.LoadNet network
-        
-        let simPeriod =
-            vissim.Simulation.SimPeriod <- 360
-            vissim.Simulation.SimPeriod
+        vissim
 
-        let stopWatch = new System.Diagnostics.Stopwatch()
-    
-        fun mode onExecute onDone ->
+    let simPeriod =
+        vissim.Simulation.SimPeriod <- max simPeriod 60u
+        vissim.Simulation.SimPeriod
+
+    let benchmark =
+        let stopWatch =  new System.Diagnostics.Stopwatch()
+
+        fun mode onExecute ->
             printfn "\n - Running [%s] mode now..." mode
             stopWatch.Restart()
             onExecute(vissim)
             stopWatch.Stop()
             let time = double stopWatch.ElapsedMilliseconds / 1000.0
             let realtimeFactor = double simPeriod / time
-            printfn " - Takes %6.2f seconds" time        
-            onDone(vissim)
+            printfn " - Takes %6.2f seconds" time
             (mode, time, simPeriod, realtimeFactor)
 
-    let private print result =
+    let print result =
         printfn "\n----------------------------------------------------------------------------------------"
         printfn " %-10s\t%-15s\t%-15s\t%-20s" "Mode" "TimeTaken(s)" "SimPeriod(s)" "RealtimeFactor(x1)"
-        result |> List.iter( fun el -> 
+        result |> List.iter( fun el ->
                                     let (mode, time, simPeriod, rtFactor) = el
                                     printfn " %-10s\t%-15.2f\t%-15d\t%-4.1f" mode time simPeriod rtFactor )
         printfn "----------------------------------------------------------------------------------------\n"
 
-    let run() =
+    member x.run() =
         printfn "Starting benchmarking Vissim realtime factor on %s" Environment.MachineName
-        SystemInfo.print ()
+        printsi() // Print system information.
 
-        let timeHidden = benchmark "Hidden"
-                                    (fun vsm -> vsm.Simulation.RunHidden vsm)
-                                    (fun _ -> ())                            
-        let timeTurboo = benchmark "Turboo"
-                                    (fun vsm -> vsm.Simulation.RunTurbo vsm)
-                                    (fun _ -> ())
-        let timeNormal = benchmark "Normal"
-                                    (fun vsm -> vsm.Simulation.Run vsm)
-                                    (fun vsm -> vsm.Exit())
+        let timeHidden = benchmark "Hidden" (fun vsm -> vsm.Simulation.RunHidden vsm)                                         
+        let timeTurboo = benchmark "Turboo" (fun vsm -> vsm.Simulation.RunTurboo vsm)            
+        let timeNormal = benchmark "Normal" (fun vsm -> vsm.Simulation.RunNormal vsm)                   
 
         print [timeHidden; timeTurboo; timeNormal]
-        Console.WriteLine("Benchmarking done. Press any key to exit.") |> ignore
-        Console.ReadLine() |> ignore
+
+    interface IDisposable with
+        member x.Dispose() = vissim.Exit()

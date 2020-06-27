@@ -81,11 +81,11 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="SystemInfo.fs" />
-    <Compile Include="VissimBenchmarks.fs" />
+    <Compile Include="Benchmarks.fs" />
+    <Compile Include="Program.fs" />
     <None Include="VissimBenchmarks.inpx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

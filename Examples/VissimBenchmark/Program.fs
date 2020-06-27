@@ -1,9 +1,12 @@
-﻿namespace Vissim.Benchmarks
+﻿module Vissim.Benchmarks.Program
 
 open System
+open Benchmarks
 
-module Program =
-    [<EntryPoint; STAThread>]
-    let main argv =
-        Jobs.RealtimeFactorBenchmark.run() |> ignore
-        0
+[<EntryPoint; STAThread>]
+let main argv =
+    use rtFactorBenchmark = new RealtimeFactorBenchmark(360u)
+    rtFactorBenchmark.run()
+    Console.WriteLine("Press any key to exit.") |> ignore
+    Console.ReadLine() |> ignore
+    0

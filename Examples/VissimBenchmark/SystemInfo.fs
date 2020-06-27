@@ -28,7 +28,7 @@ let private gpu = new ManagementObjectSearcher( "select * from Win32_VideoContro
 let private os  = new ManagementObjectSearcher( "select * from Win32_OperatingSystem" );
 let private ram = new ManagementObjectSearcher( "select * from Win32_PhysicalMemory"  );
 
-let print() =
+let printsi () =
     printfn "\n----------------------------------------------------------------------------------------"
 
     seq { for obj in gpu.Get() do yield (string obj.["Name"]) }
