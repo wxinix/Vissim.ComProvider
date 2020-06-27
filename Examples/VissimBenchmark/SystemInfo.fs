@@ -19,37 +19,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-module SystemInfo
+module private Vissim.Benchmarks.SystemInfo
 
 open System.Management
 
-let private cpu = new ManagementObjectSearcher("select * from Win32_Processor");
-let private gpu = new ManagementObjectSearcher("select * from Win32_VideoController");
-let private os  = new ManagementObjectSearcher("select * from Win32_OperatingSystem");
-let private ram = new ManagementObjectSearcher("select * from Win32_PhysicalMemory");
+let private cpu = new ManagementObjectSearcher( "select * from Win32_Processor"       );
+let private gpu = new ManagementObjectSearcher( "select * from Win32_VideoController" );
+let private os  = new ManagementObjectSearcher( "select * from Win32_OperatingSystem" );
+let private ram = new ManagementObjectSearcher( "select * from Win32_PhysicalMemory"  );
 
-let printSystemInfo() =
+let print() =
     printfn "\n----------------------------------------------------------------------------------------"
 
     seq { for obj in gpu.Get() do yield (string obj.["Name"]) }
-    |> Seq.iteri(
-        fun i el -> printfn " %-20s\t%s" ("GPU-" + (string i)) el )
+    |> Seq.iteri( fun i el -> 
+                        printfn " %-20s\t%s" 
+                                ("GPU-" + (string i)) 
+                                el )
 
-    seq { for obj in cpu.Get() do
-            yield (string obj.["Name"], obj.["NumberOfCores"] :?> uint32, obj.["NumberOfLogicalProcessors"] :?> uint32) }
-    |> Seq.iteri(
-        fun i (name, coresCnt, logicalProcessorsCnt) ->
-            printfn " %-20s\t%s, %d cores %d logical processors" ("CPU-" + (string i)) name coresCnt logicalProcessorsCnt )
+    seq { for obj in cpu.Get() do yield string obj.["Name"], obj.["NumberOfCores"] :?> uint32, obj.["NumberOfLogicalProcessors"] :?> uint32 }
+    |> Seq.iteri( fun i (name, coresCnt, logicalProcessorsCnt) ->
+                        printfn " %-20s\t%s, %d cores %d logical processors" 
+                                ("CPU-" + (string i))
+                                name
+                                coresCnt
+                                logicalProcessorsCnt )
 
-    for obj in os.Get() do
-        printfn " %-20s\t%s %s"  "OS Version" (string obj.["Caption"]) (string obj.["Version"])
+    seq { for obj in os.Get() do yield string obj.["Caption"], string obj.["Version"] }
+    |> Seq.iteri( fun i (osName, osVer) ->
+                        printfn " %-20s\t%s %s"
+                                ("OS-" + (string i)) 
+                                osName
+                                osVer)
 
-    seq {
-        for obj in ram.Get() do
-            yield (obj.["Capacity"] :?> uint64) / (1024UL * 1024UL * 1024UL) }
+    seq { for obj in ram.Get() do yield (obj.["Capacity"] :?> uint64) / (1024UL * 1024UL * 1024UL) }
     |> Seq.sum
     |> printfn " %-20s\t%d GB"  "Physical Memory"
 
-    printfn "\n----------------------------------------------------------------------------------------"
+    printfn "----------------------------------------------------------------------------------------"
 
 

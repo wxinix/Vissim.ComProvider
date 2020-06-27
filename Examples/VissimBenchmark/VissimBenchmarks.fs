@@ -19,12 +19,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-module private Vissim.Benchmarks
+module Vissim.Benchmarks.Jobs
 
 open System
 open System.IO
 open System.Reflection
 open System.Runtime.InteropServices
+
+// Alias to Vissim 2020 COM Type Lib
+type VissimLib =
+    Vissim.ComProvider.``Vissim Object Library 20.0 64 Bit``.``14.0-win64``
 
 module private SysApi =
     [<DllImport("Vissim.ComProvider.Utilities.dll", CallingConvention = CallingConvention.StdCall)>]
@@ -32,13 +36,9 @@ module private SysApi =
 
     [<DllImport("Vissim.ComProvider.Utilities.dll", CallingConvention = CallingConvention.StdCall)>]
     extern void ShowVissim(nativeint unk);
+    // F# Type Extension to extend IVissim. In C#, you would need Extension Methods (see example "VissimExtension")
 
-// Alias to Vissim 2020 COM Type Lib
-type VissimTypes =
-    Vissim.ComProvider.``Vissim Object Library 20.0 64 Bit``.``14.0-win64``
-
- // F# Type Extension to extend IVissim. In C#, you would need Extension Methods (see example "VissimExtension")
- type VissimTypes.IVissim with
+type VissimLib.IVissim with
     member this.HideMainWindow () =
         let unk = Marshal.GetIUnknownForObject this
         SysApi.HideVissim(unk)
@@ -49,21 +49,21 @@ type VissimTypes =
         SysApi.ShowVissim(unk)
         Marshal.Release(unk)
 
-type VissimTypes.ISimulation with
-    member x.RunHidden(vissim: VissimTypes.IVissim) =
+type VissimLib.ISimulation with
+    member x.RunHidden(vissim: VissimLib.IVissim) =
         vissim.HideMainWindow() |> ignore
         x.RunContinuous()
         x.Stop()
         vissim.RestoreMainWindow() |> ignore
 
-    member x.Run(vissim: VissimTypes.IVissim) =
+    member x.Run(vissim: VissimLib.IVissim) =
         vissim.RestoreMainWindow() |> ignore
         vissim.ResumeUpdateGUI()
         vissim.Graphics.AttValue("QuickMode") <- false
         x.RunContinuous()
         x.Stop()
 
-    member x.RunTurbo(vissim: VissimTypes.IVissim) =
+    member x.RunTurbo(vissim: VissimLib.IVissim) =
         vissim.SuspendUpdateGUI()
         vissim.Graphics.AttValue("QuickMode") <- true
         vissim.HideMainWindow() |> ignore
@@ -76,7 +76,7 @@ type VissimTypes.ISimulation with
 
 module RealtimeFactorBenchmark =
     let private benchmark =
-        let vissim = VissimTypes.VissimClass() :> VissimTypes.IVissim            
+        let vissim = VissimLib.VissimClass()       
         let network =
             let exePath = Uri(Assembly.GetEntryAssembly().GetName().CodeBase).LocalPath
             FileInfo(exePath).Directory.FullName + "\\VissimBenchmarks.inpx"
@@ -102,31 +102,25 @@ module RealtimeFactorBenchmark =
     let private print result =
         printfn "\n----------------------------------------------------------------------------------------"
         printfn " %-10s\t%-15s\t%-15s\t%-20s" "Mode" "TimeTaken(s)" "SimPeriod(s)" "RealtimeFactor(x1)"
-        result |> List.iter(fun el -> let (mode, time, simPeriod, rtFactor) = el
-                                      printfn " %-10s\t%-15.2f\t%-15d\t%-4.1f" mode time simPeriod rtFactor)
+        result |> List.iter( fun el -> 
+                                    let (mode, time, simPeriod, rtFactor) = el
+                                    printfn " %-10s\t%-15.2f\t%-15d\t%-4.1f" mode time simPeriod rtFactor )
         printfn "----------------------------------------------------------------------------------------\n"
 
     let run() =
         printfn "Starting benchmarking Vissim realtime factor on %s" Environment.MachineName
-        SystemInfo.printSystemInfo()
+        SystemInfo.print ()
 
         let timeHidden = benchmark "Hidden"
-                                   (fun vsm -> vsm.Simulation.RunHidden vsm)
-                                   (fun _ -> ())                            
+                                    (fun vsm -> vsm.Simulation.RunHidden vsm)
+                                    (fun _ -> ())                            
         let timeTurboo = benchmark "Turboo"
-                                   (fun vsm -> vsm.Simulation.RunTurbo vsm)
-                                   (fun _ -> ())
+                                    (fun vsm -> vsm.Simulation.RunTurbo vsm)
+                                    (fun _ -> ())
         let timeNormal = benchmark "Normal"
-                                   (fun vsm -> vsm.Simulation.Run vsm)
-                                   (fun vsm -> vsm.Exit())
+                                    (fun vsm -> vsm.Simulation.Run vsm)
+                                    (fun vsm -> vsm.Exit())
 
         print [timeHidden; timeTurboo; timeNormal]
         Console.WriteLine("Benchmarking done. Press any key to exit.") |> ignore
         Console.ReadLine() |> ignore
-
-module Main =
-    [<EntryPoint; STAThread>]
-    let main argv =
-        RealtimeFactorBenchmark.run() |> ignore
-        0
-
