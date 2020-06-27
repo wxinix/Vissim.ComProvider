@@ -7,7 +7,7 @@ open LoopTest
 let main argv =
     use loopTest = new LoopTest(200u)
     loopTest.run()
-    Console.WriteLine("Please enter any key to exit.")
+    Console.WriteLine("\nPlease enter any key to exit.")
     Console.ReadLine() |> ignore
     0
 

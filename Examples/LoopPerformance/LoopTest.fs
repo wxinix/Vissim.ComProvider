@@ -118,12 +118,14 @@ type LoopTest (simPeriod: uint) =
     member _.run() =
         let results = [ ("ArrayLoop", arrayLoop); ("EnumLoop", enumLoop); ("IterLoop", iterLoop); ("MultiAttValuesLoop", multiAttValuesLoop); ("MultipleAttrsLoop", multiAttrsLoop) ]
                       |> List.map(fun job -> benchmark job)
+        let baseline = results |> List.minBy snd
 
         printfn "\n----------------------------------------------------------"
         printfn " Loop Performance Benchmarking Summary"
         printfn "----------------------------------------------------------"
 
-        results |> List.iter(fun result -> printfn "%-18s\t%f" (fst result) (snd result))
+        results |> List.iter(fun result -> 
+            printfn "%-18s\t%10.3f sec (%5.2f)" (fst result) (snd result) ((snd result)/(snd baseline)) )
 
     interface IDisposable with
         member _.Dispose() = vissim.Exit()
