@@ -40,12 +40,12 @@ module private SysApi =
     // F# Type Extension to extend IVissim. In C#, you would need Extension Methods (see example "VissimExtension")
 
 type VissimLib.IVissim with
-    member this.HideMainWindow () =
+    member this.HideMainWindow() =
         let unk = Marshal.GetIUnknownForObject this
         SysApi.HideVissim(unk)
         Marshal.Release(unk)
 
-    member this.RestoreMainWindow () =
+    member this.RestoreMainWindow() =
         let unk = Marshal.GetIUnknownForObject this
         SysApi.ShowVissim(unk)
         Marshal.Release(unk)
