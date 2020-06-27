@@ -1,0 +1,12 @@
+This tool benchmarks your workstation in terms of Vissim 2020 realtime factor. 
+
+The higher the realtime factor, the more powerful your workstation. However, use
+at your own risk and make your own judgement call. For a decent workstation
+in the year 2020, a x20 realtime factor is reasonably expected for the "Turbo" mode.
+
+This tool only supports Vissim 2020. You can modify/edit the F# source code for
+other Vissim versions. 
+
+Source code https://github.com/wxinix/Vissim.ComProvider/tree/master/Examples/VissimBenchmark
+
+Copyright 2020 (c) Wuping Xin
