@@ -32,10 +32,6 @@ open System.Collections.Generic
 type VissimLib =
     Vissim.ComProvider.``Vissim Object Library 20.0 64 Bit``.``14.0-win64``
 
-let [<Literal>] ExampleFolder = @"C:\Users\Public\Documents\PTV Vision\PTV Vissim 2020\Examples Training\COM\"
-let [<Literal>] LayoutFile    = ExampleFolder + @"Car2X.PY\Car2X.layx"
-let [<Literal>] NetworkFile   = ExampleFolder + @"Car2X.PY\Car2X.inpx"
-
 // The following illustrates how to extend ISimulation interface with customized events.
 type SimulationEventArgs =
     { CurStep: int
@@ -120,7 +116,7 @@ let asArray arr2d =
 [<EntryPoint; STAThread>]
 let main argv =
     let vissim = VissimLib.VissimClass()
-    vissim.LoadNet NetworkFile
+    vissim.LoadNet @"C:\Users\Public\Documents\PTV Vision\PTV Vissim 2020\Examples Training\COM\Car2X.PY\Car2X.inpx"
     vissim.Net.Scripts.RemoveAll()     // Remove all currently embedded scripts.
     let simulation = vissim.Simulation // Must save to a local, otherwise, each time vissim.Simulation will return a different reference
     simulation.Events.SimStepOnStart.Publish |> Event.add(
